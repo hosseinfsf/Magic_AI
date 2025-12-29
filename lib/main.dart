@@ -1,7 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:firebase_core/firebase_core.dart';
+
+// --- App Structure ---
 import 'core/theme/app_theme.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/home_screen.dart';
@@ -50,7 +53,6 @@ class ManaApp extends StatelessWidget {
           '/morning': (context) => const MorningManaScreen(),
           '/night': (context) => const NightSummaryScreen(),
         },
-        // Wrap app content so we can overlay the floating icon with correct MediaQuery
         builder: (context, child) {
           final settings = Provider.of<SettingsProvider>(context);
           return Stack(
@@ -63,16 +65,16 @@ class ManaApp extends StatelessWidget {
                       context: context,
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
-                      builder: (ctx) => FractionallySizedBox(
+                      builder: (ctx) => const FractionallySizedBox(
                         heightFactor: 0.85,
-                        child: const FloatingPanel(),
+                        child: FloatingPanel(),
                       ),
                     );
                   },
                   onLongPress: () {
                     Navigator.pushNamed(context, '/settings');
                   },
-                  clipboardActive: false,
+                  clipboardActive: false, // This will be handled in HomeScreen
                   size: settings.floatingSize,
                   opacity: settings.floatingOpacity,
                 ),
@@ -100,35 +102,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkOnboardingStatus() async {
     await Future.delayed(const Duration(seconds: 2));
-    
     if (!mounted) return;
-    
-    final authService = AuthService();
+
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    
-    // بررسی ورود کاربر
-    if (authService.isSignedIn) {
-      await userProvider.loadUserProfile();
-      final hasCompletedOnboarding = await userProvider.checkOnboardingStatus();
-      
-      if (!mounted) return;
-      
-      if (hasCompletedOnboarding) {
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        Navigator.pushReplacementNamed(context, '/onboarding');
-      }
+    final hasCompletedOnboarding = await userProvider.checkOnboardingStatus();
+
+    if (!mounted) return;
+    if (hasCompletedOnboarding) {
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
-      // اگر لاگین نیست، به صفحه ورود برو
-      final hasCompletedOnboarding = await userProvider.checkOnboardingStatus();
-      
-      if (!mounted) return;
-      
-      if (hasCompletedOnboarding) {
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        Navigator.pushReplacementNamed(context, '/login');
-      }
+      Navigator.pushReplacementNamed(context, '/onboarding');
     }
   }
 
@@ -151,23 +134,20 @@ class _SplashScreenState extends State<SplashScreen> {
                   gradient: AppTheme.purpleGoldGradient,
                   boxShadow: [
                     BoxShadow(
-                      color: AppTheme.secondaryGold.withAlpha((0.5 * 255).round()),
+                      color: AppTheme.secondaryGold.withAlpha(128),
                       blurRadius: 30,
                       spreadRadius: 10,
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.pets,
-                  size: 60,
-                  color: Colors.white,
-                ),
+                child: const Icon(Icons.pets, size: 60, color: Colors.white),
               )
                   .animate(onPlay: (controller) => controller.repeat())
                   .scale(
                     duration: 1500.ms,
                     begin: const Offset(1, 1),
                     end: const Offset(1.1, 1.1),
+                    curve: Curves.easeInOut,
                   ),
               const SizedBox(height: 24),
               const Text(
@@ -182,12 +162,9 @@ class _SplashScreenState extends State<SplashScreen> {
                   .fadeIn(duration: 600.ms)
                   .slideY(begin: -0.2, end: 0),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'دستیار هوشمند شما',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: Colors.white70, fontSize: 16),
               )
                   .animate()
                   .fadeIn(duration: 800.ms, delay: 200.ms)
@@ -199,4 +176,3 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-

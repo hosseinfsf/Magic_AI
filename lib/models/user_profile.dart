@@ -1,3 +1,4 @@
+
 /// مدل پروفایل کاربر
 class UserProfile {
   final String name;
@@ -7,6 +8,7 @@ class UserProfile {
   final String city;
   final DateTime createdAt;
   final bool hasCompletedOnboarding;
+  final String? favoriteTeam; // New field for favorite sports team
 
   UserProfile({
     required this.name,
@@ -16,6 +18,7 @@ class UserProfile {
     required this.city,
     required this.createdAt,
     this.hasCompletedOnboarding = true,
+    this.favoriteTeam,
   });
 
   // تبدیل به Map برای ذخیره‌سازی
@@ -28,6 +31,7 @@ class UserProfile {
       'city': city,
       'createdAt': createdAt.toIso8601String(),
       'hasCompletedOnboarding': hasCompletedOnboarding,
+      'favoriteTeam': favoriteTeam,
     };
   }
 
@@ -41,6 +45,7 @@ class UserProfile {
       city: json['city'] ?? '',
       createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
       hasCompletedOnboarding: json['hasCompletedOnboarding'] ?? false,
+      favoriteTeam: json['favoriteTeam'] as String?,
     );
   }
 
@@ -53,6 +58,7 @@ class UserProfile {
     String? city,
     DateTime? createdAt,
     bool? hasCompletedOnboarding,
+    String? favoriteTeam,
   }) {
     return UserProfile(
       name: name ?? this.name,
@@ -62,7 +68,7 @@ class UserProfile {
       city: city ?? this.city,
       createdAt: createdAt ?? this.createdAt,
       hasCompletedOnboarding: hasCompletedOnboarding ?? this.hasCompletedOnboarding,
+      favoriteTeam: favoriteTeam ?? this.favoriteTeam,
     );
   }
 }
-
