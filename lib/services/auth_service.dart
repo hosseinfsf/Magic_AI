@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -41,7 +42,7 @@ class AuthService {
       // Sign in to Firebase with the Google credential
       return await _auth.signInWithCredential(credential);
     } catch (e) {
-      print('Error signing in with Google: $e');
+      debugPrint('Error signing in with Google: $e');
       rethrow;
     }
   }
@@ -71,7 +72,7 @@ class AuthService {
       // Sign in to Firebase
       return await _auth.signInWithCredential(oauthCredential);
     } catch (e) {
-      print('Error signing in with Apple: $e');
+      debugPrint('Error signing in with Apple: $e');
       rethrow;
     }
   }
@@ -87,7 +88,7 @@ class AuthService {
         password: password,
       );
     } catch (e) {
-      print('Error signing in with email: $e');
+      debugPrint('Error signing in with email: $e');
       rethrow;
     }
   }
@@ -103,7 +104,7 @@ class AuthService {
         password: password,
       );
     } catch (e) {
-      print('Error signing up with email: $e');
+      debugPrint('Error signing up with email: $e');
       rethrow;
     }
   }
@@ -116,7 +117,7 @@ class AuthService {
         _googleSignIn.signOut(),
       ]);
     } catch (e) {
-      print('Error signing out: $e');
+      debugPrint('Error signing out: $e');
       rethrow;
     }
   }
@@ -126,7 +127,7 @@ class AuthService {
     try {
       await _auth.currentUser?.delete();
     } catch (e) {
-      print('Error deleting account: $e');
+      debugPrint('Error deleting account: $e');
       rethrow;
     }
   }
@@ -136,7 +137,7 @@ class AuthService {
     try {
       await _auth.sendPasswordResetEmail(email: email);
     } catch (e) {
-      print('Error sending password reset email: $e');
+      debugPrint('Error sending password reset email: $e');
       rethrow;
     }
   }
@@ -153,7 +154,7 @@ class AuthService {
       }
       await _auth.currentUser?.reload();
     } catch (e) {
-      print('Error updating profile: $e');
+      debugPrint('Error updating profile: $e');
       rethrow;
     }
   }

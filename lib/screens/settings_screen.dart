@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
 import '../providers/user_provider.dart';
 import '../providers/chat_provider.dart';
+import '../providers/settings_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -56,6 +57,61 @@ class SettingsScreen extends StatelessWidget {
           ),
           
           const SizedBox(height: 16),
+
+          // تنظیمات شناور و عمومی
+          Consumer<SettingsProvider>(
+            builder: (context, settings, child) {
+              return Card(
+                color: AppTheme.bgCard,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    children: [
+                      SwitchListTile(
+                        value: settings.floatingEnabled,
+                        title: const Text('نمایش آیکون شناور'),
+                        subtitle: const Text('نمایش آیکون مانا روی تمام صفحات'),
+                        onChanged: (v) => settings.setFloatingEnabled(v),
+                      ),
+                      ListTile(
+                        title: const Text('شفافیت آیکون'),
+                        subtitle: Slider(
+                          value: settings.floatingOpacity,
+                          min: 0.3,
+                          max: 1.0,
+                          divisions: 7,
+                          onChanged: (v) => settings.setFloatingOpacity(v),
+                        ),
+                      ),
+                      ListTile(
+                        title: const Text('اندازه آیکون'),
+                        subtitle: Slider(
+                          value: settings.floatingSize,
+                          min: 40,
+                          max: 120,
+                          divisions: 8,
+                          onChanged: (v) => settings.setFloatingSize(v),
+                        ),
+                      ),
+                      ListTile(
+                        title: const Text('زبان برنامه'),
+                        trailing: DropdownButton<String>(
+                          value: settings.language,
+                          items: const [
+                            DropdownMenuItem(value: 'fa', child: Text('فارسی')),
+                            DropdownMenuItem(value: 'en', child: Text('English')),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) settings.setLanguage(v);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
           
           // تنظیمات چت
           Card(
@@ -85,17 +141,16 @@ class SettingsScreen extends StatelessWidget {
                     'شروع یک گفتگوی جدید',
                     style: TextStyle(color: AppTheme.textSecondary),
                   ),
-                  onTap: () {
-                    Provider.of<ChatProvider>(context, listen: false)
-                        .clearChat()
-                        .then((_) {
+                  onTap: () async {
+                    await Provider.of<ChatProvider>(context, listen: false).clearChat();
+                    if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('چت پاک شد'),
                           backgroundColor: AppTheme.primaryPurple,
                         ),
                       );
-                    });
+                    }
                   },
                 ),
               ],

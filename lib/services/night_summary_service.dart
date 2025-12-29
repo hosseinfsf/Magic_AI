@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../services/gemini_service.dart';
 import '../services/ai_learning_service.dart';
 import '../models/user_profile.dart';
@@ -60,7 +61,7 @@ ${preferences != null ? '''
       
       return response;
     } catch (e) {
-      print('Error generating night summary: $e');
+      debugPrint('Error generating night summary: $e');
       return _getDefaultNightMessage(userProfile?.name ?? 'عزیزم', completedTasks, totalTasks);
     }
   }

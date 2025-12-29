@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'core/theme/app_theme.dart';
 import 'screens/onboarding_screen.dart';
@@ -12,6 +12,9 @@ import 'screens/night_summary_screen.dart';
 import 'providers/user_provider.dart';
 import 'providers/chat_provider.dart';
 import 'providers/task_provider.dart';
+import 'providers/settings_provider.dart';
+import 'widgets/floating_icon.dart';
+import 'widgets/floating_panel.dart';
 import 'services/auth_service.dart';
 
 void main() async {
@@ -30,6 +33,7 @@ class ManaApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserProvider()..loadUserProfile()),
         ChangeNotifierProvider(create: (_) => ChatProvider()..loadMessages()),
         ChangeNotifierProvider(create: (_) => TaskProvider()..loadTasks()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()..loadSettings()),
       ],
       child: MaterialApp(
         title: 'مانا - دستیار هوشمند',
@@ -45,6 +49,35 @@ class ManaApp extends StatelessWidget {
           '/settings': (context) => const SettingsScreen(),
           '/morning': (context) => const MorningManaScreen(),
           '/night': (context) => const NightSummaryScreen(),
+        },
+        // Wrap app content so we can overlay the floating icon with correct MediaQuery
+        builder: (context, child) {
+          final settings = Provider.of<SettingsProvider>(context);
+          return Stack(
+            children: [
+              if (child != null) child,
+              if (settings.floatingEnabled)
+                FloatingManaIcon(
+                  onDoubleTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (ctx) => FractionallySizedBox(
+                        heightFactor: 0.85,
+                        child: const FloatingPanel(),
+                      ),
+                    );
+                  },
+                  onLongPress: () {
+                    Navigator.pushNamed(context, '/settings');
+                  },
+                  clipboardActive: false,
+                  size: settings.floatingSize,
+                  opacity: settings.floatingOpacity,
+                ),
+            ],
+          );
         },
       ),
     );
@@ -118,7 +151,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   gradient: AppTheme.purpleGoldGradient,
                   boxShadow: [
                     BoxShadow(
-                      color: AppTheme.secondaryGold.withOpacity(0.5),
+                      color: AppTheme.secondaryGold.withAlpha((0.5 * 255).round()),
                       blurRadius: 30,
                       spreadRadius: 10,
                     ),

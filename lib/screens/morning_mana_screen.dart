@@ -83,9 +83,8 @@ class _MorningManaScreenState extends State<MorningManaScreen> {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.primaryPurple.withOpacity(0.3),
-                          blurRadius: 20,
-                          spreadRadius: 5,
+                          color: AppTheme.primaryPurple.withAlpha((0.3 * 255).round()),
+                          blurRadius: 10,
                         ),
                       ],
                     ),

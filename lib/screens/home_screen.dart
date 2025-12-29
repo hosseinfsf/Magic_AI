@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
         gradient: AppTheme.purpleGoldGradient,
         boxShadow: [
           BoxShadow(
-            color: AppTheme.primaryPurple.withOpacity(0.3),
+            color: AppTheme.primaryPurple.withAlpha((0.3 * 255).round()),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withAlpha((0.2 * 255).round()),
                     blurRadius: 8,
                   ),
                 ],
@@ -195,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
               size: 60,
               color: Colors.white,
             ),
-          )
+              )
               .animate(onPlay: (controller) => controller.repeat())
               .scale(duration: 2000.ms, begin: const Offset(1, 1), end: const Offset(1.1, 1.1)),
           const SizedBox(height: 24),
@@ -242,9 +242,9 @@ class _HomeScreenState extends State<HomeScreen> {
             bottomLeft: Radius.circular(message.isUser ? 20 : 4),
             bottomRight: Radius.circular(message.isUser ? 4 : 20),
           ),
-          boxShadow: [
+            boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withAlpha((0.1 * 255).round()),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -283,8 +283,8 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: AppTheme.bgCard,
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            BoxShadow(
+            color: Colors.black.withAlpha((0.2 * 255).round()),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -595,15 +595,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class ChatMessage {
-  final String text;
-  final bool isUser;
-  final DateTime timestamp;
-
-  ChatMessage({
-    required this.text,
-    required this.isUser,
-    required this.timestamp,
-  });
-}
+// Note: ChatMessage model is defined in `lib/models/chat_message.dart` and imported above.
+// Removed local ChatMessage duplicate definition to avoid type conflicts.
 

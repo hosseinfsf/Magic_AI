@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_profile.dart';
@@ -27,7 +28,7 @@ class CloudStorageService {
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (e) {
-      print('Error saving user profile: $e');
+      debugPrint('Error saving user profile: $e');
       rethrow;
     }
   }
@@ -43,7 +44,7 @@ class CloudStorageService {
       }
       return null;
     } catch (e) {
-      print('Error loading user profile: $e');
+      debugPrint('Error loading user profile: $e');
       return null;
     }
   }
@@ -59,7 +60,7 @@ class CloudStorageService {
           .doc(message.id)
           .set(message.toJson());
     } catch (e) {
-      print('Error saving chat message: $e');
+      debugPrint('Error saving chat message: $e');
       rethrow;
     }
   }
@@ -81,7 +82,7 @@ class CloudStorageService {
           .toList()
         ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
     } catch (e) {
-      print('Error loading chat messages: $e');
+      debugPrint('Error loading chat messages: $e');
       return [];
     }
   }
@@ -103,7 +104,7 @@ class CloudStorageService {
       
       await batch.commit();
     } catch (e) {
-      print('Error clearing chat: $e');
+      debugPrint('Error clearing chat: $e');
       rethrow;
     }
   }
@@ -118,7 +119,7 @@ class CloudStorageService {
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (e) {
-      print('Error saving user preferences: $e');
+      debugPrint('Error saving user preferences: $e');
       rethrow;
     }
   }
@@ -136,7 +137,7 @@ class CloudStorageService {
       }
       return {};
     } catch (e) {
-      print('Error loading user preferences: $e');
+      debugPrint('Error loading user preferences: $e');
       return {};
     }
   }
@@ -159,7 +160,7 @@ class CloudStorageService {
         'timestamp': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      print('Error saving user behavior: $e');
+      debugPrint('Error saving user behavior: $e');
       // Don't throw - this is non-critical
     }
   }
@@ -186,7 +187,7 @@ class CloudStorageService {
               })
           .toList();
     } catch (e) {
-      print('Error loading user behavior: $e');
+      debugPrint('Error loading user behavior: $e');
       return [];
     }
   }
@@ -209,7 +210,7 @@ class CloudStorageService {
         await saveChatMessage(message);
       }
     } catch (e) {
-      print('Error syncing with cloud: $e');
+      debugPrint('Error syncing with cloud: $e');
     }
   }
 }

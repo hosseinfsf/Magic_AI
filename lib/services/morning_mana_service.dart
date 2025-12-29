@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../services/gemini_service.dart';
 import '../services/hafez_service.dart';
 import '../services/ai_learning_service.dart';
@@ -23,10 +24,10 @@ class MorningManaService {
       final birthMonth = userProfile?.birthMonth ?? '';
       final city = userProfile?.city ?? '';
       
-      // گرفتن فال حافظ
-      final fortune = birthMonth.isNotEmpty
-          ? _hafezService.getFortuneByMonth(birthMonth)
-          : _hafezService.getRandomFortune();
+    // گرفتن فال حافظ
+    final fortune = birthMonth.isNotEmpty
+      ? HafezService.getFortuneByMonth(birthMonth)
+      : HafezService.getRandomFortune();
       
       final ghazal = fortune['text'] ?? '';
       
@@ -77,7 +78,7 @@ ${preferences != null ? '''
       
       return response;
     } catch (e) {
-      print('Error generating morning mana: $e');
+      debugPrint('Error generating morning mana: $e');
       return _getDefaultMorningMessage(userProfile?.name ?? 'عزیزم');
     }
   }

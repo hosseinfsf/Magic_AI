@@ -8,12 +8,16 @@ class FloatingManaIcon extends StatefulWidget {
   final VoidCallback onDoubleTap;
   final VoidCallback onLongPress;
   final bool clipboardActive; // وقتی چیزی کپی می‌شه قرمز بشه
-  
+  final double size;
+  final double opacity;
+
   const FloatingManaIcon({
     super.key,
     required this.onDoubleTap,
     required this.onLongPress,
     this.clipboardActive = false,
+    this.size = 70.0,
+    this.opacity = 1.0,
   });
 
   @override
@@ -76,11 +80,16 @@ class _FloatingManaIconState extends State<FloatingManaIcon>
         onPanEnd: (_) {
           setState(() => isDragging = false);
         },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          transform: Matrix4.identity()
-            ..scale(isDragging ? 1.1 : 1.0),
-          child: _buildIconContainer(),
+        child: Opacity(
+          opacity: widget.opacity.clamp(0.0, 1.0),
+          child: AnimatedScale(
+            scale: isDragging ? 1.1 : 1.0,
+            duration: const Duration(milliseconds: 200),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              child: _buildIconContainer(),
+            ),
+          ),
         ),
       ),
     );
@@ -94,9 +103,10 @@ class _FloatingManaIconState extends State<FloatingManaIcon>
         AnimatedBuilder(
           animation: _pulseController,
           builder: (context, child) {
-            return Container(
-              width: 70 + (_pulseController.value * 10),
-              height: 70 + (_pulseController.value * 10),
+        final base = widget.size;
+        return Container(
+          width: base + (_pulseController.value * (base * 0.15)),
+          height: base + (_pulseController.value * (base * 0.15)),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: widget.clipboardActive
@@ -109,8 +119,8 @@ class _FloatingManaIconState extends State<FloatingManaIcon>
                 boxShadow: [
                   BoxShadow(
                     color: widget.clipboardActive
-                        ? Colors.red.withOpacity(0.5)
-                        : const Color(0xFF7C3AED).withOpacity(0.5),
+                        ? Colors.red.withAlpha((0.5 * 255).round())
+                        : const Color(0xFF7C3AED).withAlpha((0.5 * 255).round()),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
@@ -122,8 +132,8 @@ class _FloatingManaIconState extends State<FloatingManaIcon>
         
         // آیکون اصلی
         Container(
-          width: 60,
-          height: 60,
+          width: widget.size * 0.85,
+          height: widget.size * 0.85,
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.white,

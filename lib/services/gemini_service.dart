@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 /// سرویس اتصال به Google Gemini API
@@ -123,7 +124,7 @@ class GeminiService {
       
       return response.text!;
     } on Exception catch (e) {
-      print('Gemini Error: $e');
+      debugPrint('Gemini Error: $e');
       if (e.toString().contains('API_KEY')) {
         return 'خطا: لطفاً API Key را در فایل gemini_service.dart تنظیم کنید 🔑';
       } else if (e.toString().contains('quota') || e.toString().contains('limit')) {
@@ -133,7 +134,7 @@ class GeminiService {
       }
       return 'مشکلی پیش اومد. لطفاً دوباره امتحان کن! 🙏';
     } catch (e) {
-      print('Unexpected Error: $e');
+      debugPrint('Unexpected Error: $e');
       return 'خطای غیرمنتظره. لطفاً دوباره امتحان کنید! ⚠️';
     }
   }
@@ -151,8 +152,8 @@ class GeminiService {
       ]);
       
       return response.text ?? '';
-    } catch (e) {
-      print('Content Generation Error: $e');
+      } catch (e) {
+      debugPrint('Content Generation Error: $e');
       return '';
     }
   }
@@ -235,7 +236,7 @@ $count پاسخ مختلف بده با لحن‌های مختلف:
       
       return replies.take(count).toList();
     } catch (e) {
-      print('Reply Generation Error: $e');
+      debugPrint('Reply Generation Error: $e');
       return [
         'ممنون از پیامت! 😊',
         'خیلی ممنون که نظر دادی',
@@ -278,7 +279,7 @@ $count پاسخ مختلف بده با لحن‌های مختلف:
       
       return response.text ?? 'تفسیری یافت نشد';
     } catch (e) {
-      print('Hafez Interpretation Error: $e');
+      debugPrint('Hafez Interpretation Error: $e');
       return 'متأسفانه نتونستم فال رو تفسیر کنم 😞';
     }
   }
@@ -303,7 +304,7 @@ $count پاسخ مختلف بده با لحن‌های مختلف:
       
       return response.text ?? '';
     } catch (e) {
-      print('Summarization Error: $e');
+      debugPrint('Summarization Error: $e');
       return 'خلاصه‌سازی ناموفق بود';
     }
   }

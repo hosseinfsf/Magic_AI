@@ -42,7 +42,9 @@ dependencies:
   # Utilities
   intl: ^0.19.0
   shamsi_date: ^1.0.0
-  persian_tools: ^5.0.0
+  persian_tools: ^1.0.3
+  # NOTE: lowered version to a published release to allow resolving behind a mirror/VPN.
+  # If you prefer a different version, update this line and run `flutter pub get`.
   clipboard_watcher: ^0.2.1
   flutter_local_notifications: ^17.1.2
   permission_handler: ^11.3.1

@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       gradient: AppTheme.purpleGoldGradient,
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.secondaryGold.withOpacity(0.5),
+                          color: AppTheme.secondaryGold.withAlpha((0.5 * 255).round()),
                           blurRadius: 30,
                           spreadRadius: 10,
                         ),
@@ -118,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // یا
                   Row(
                     children: [
-                      Expanded(child: Divider(color: Colors.white.withOpacity(0.3))),
+                      Expanded(child: Divider(color: Colors.white.withAlpha((0.3 * 255).round()))),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
@@ -126,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(color: Colors.white70),
                         ),
                       ),
-                      Expanded(child: Divider(color: Colors.white.withOpacity(0.3))),
+                      Expanded(child: Divider(color: Colors.white.withAlpha((0.3 * 255).round()))),
                     ],
                   ),
                   
@@ -177,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha((0.2 * 255).round()),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

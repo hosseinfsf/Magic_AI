@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../models/user_preferences.dart';
 import '../services/cloud_storage_service.dart';
 import '../services/gemini_service.dart';
@@ -20,7 +21,7 @@ class AILearningService {
           : UserPreferences.fromJson(data);
       return _cachedPreferences!;
     } catch (e) {
-      print('Error loading preferences: $e');
+      debugPrint('Error loading preferences: $e');
       return UserPreferences();
     }
   }
@@ -31,7 +32,7 @@ class AILearningService {
       _cachedPreferences = preferences;
       await _cloudStorage.saveUserPreferences(preferences.toJson());
     } catch (e) {
-      print('Error saving preferences: $e');
+      debugPrint('Error saving preferences: $e');
     }
   }
 
@@ -62,7 +63,7 @@ class AILearningService {
       // تحلیل لحن و علایق از پیام کاربر
       await _analyzeUserMessage(userMessage);
     } catch (e) {
-      print('Error learning from interaction: $e');
+      debugPrint('Error learning from interaction: $e');
     }
   }
 
@@ -95,7 +96,7 @@ class AILearningService {
       // این یک پیاده‌سازی ساده است - می‌توانید پیچیده‌تر کنید
       
     } catch (e) {
-      print('Error analyzing user message: $e');
+      debugPrint('Error analyzing user message: $e');
     }
   }
 
@@ -132,7 +133,7 @@ ${behaviorHistory.take(5).map((b) => '- ${b['action']}: ${b['context']}').join('
 
       return await _geminiService.sendMessage(prompt);
     } catch (e) {
-      print('Error getting personalized suggestion: $e');
+      debugPrint('Error getting personalized suggestion: $e');
       return '';
     }
   }
@@ -168,7 +169,7 @@ ${behaviorHistory.take(5).map((b) => '- ${b['action']}: ${b['context']}').join('
 
       await savePreferences(updated);
     } catch (e) {
-      print('Error updating preference: $e');
+      debugPrint('Error updating preference: $e');
     }
   }
 
@@ -189,7 +190,7 @@ ${behaviorHistory.take(5).map((b) => '- ${b['action']}: ${b['context']}').join('
 - تعداد تعاملات: ${behaviorHistory.length}
 ''';
     } catch (e) {
-      print('Error getting personality summary: $e');
+      debugPrint('Error getting personality summary: $e');
       return '';
     }
   }

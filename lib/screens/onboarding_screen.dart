@@ -71,8 +71,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 2),
               decoration: BoxDecoration(
                 color: index <= currentPage
-                    ? AppTheme.secondaryGold
-                    : Colors.white.withOpacity(0.3),
+            ? AppTheme.secondaryGold
+              : Colors.white.withAlpha((0.3 * 255).round()),
                 borderRadius: BorderRadius.circular(2),
               ),
             )
@@ -101,13 +101,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           decoration: InputDecoration(
             hintText: 'مثلاً علی، مریم، ...',
             hintStyle: TextStyle(
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withAlpha((0.5 * 255).round()),
               fontSize: 18,
             ),
             border: InputBorder.none,
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                color: AppTheme.secondaryGold.withOpacity(0.5),
+                color: AppTheme.secondaryGold.withAlpha((0.5 * 255).round()),
                 width: 2,
               ),
             ),
@@ -385,18 +385,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           gradient: isSelected
               ? AppTheme.purpleGoldGradient
               : null,
-          color: isSelected ? null : Colors.white.withOpacity(0.1),
+          color: isSelected ? null : Colors.white.withAlpha((0.1 * 255).round()),
           borderRadius: BorderRadius.circular(25),
-          border: Border.all(
+            border: Border.all(
             color: isSelected
                 ? Colors.transparent
-                : Colors.white.withOpacity(0.3),
+                : Colors.white.withAlpha((0.3 * 255).round()),
             width: 2,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppTheme.secondaryGold.withOpacity(0.5),
+                    color: AppTheme.secondaryGold.withAlpha((0.5 * 255).round()),
                     blurRadius: 15,
                     spreadRadius: 2,
                   ),

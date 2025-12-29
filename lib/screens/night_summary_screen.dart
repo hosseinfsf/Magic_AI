@@ -98,7 +98,7 @@ class _NightSummaryScreenState extends State<NightSummaryScreen> {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.primaryPurple.withOpacity(0.3),
+                          color: AppTheme.primaryPurple.withAlpha((0.3 * 255).round()),
                           blurRadius: 20,
                           spreadRadius: 5,
                         ),
