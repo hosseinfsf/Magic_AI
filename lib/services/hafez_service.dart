@@ -65,7 +65,7 @@ class HafezService {
       '🌨️ بهمن': 10,
       '🌷 اسفند': 11,
     };
-    
+
     final monthIndex = monthMap[birthMonth] ?? 0;
     final fortuneIndex = monthIndex % _ghazals.length;
     return _ghazals[fortuneIndex];
@@ -75,14 +75,17 @@ class HafezService {
   static Map<String, String> getFortuneByQuestion(String question) {
     // تحلیل ساده سوال و انتخاب فال مناسب
     final lowerQuestion = question.toLowerCase();
-    
+
     if (lowerQuestion.contains('عشق') || lowerQuestion.contains('محبت')) {
       return _ghazals[1]; // غزل عشق
-    } else if (lowerQuestion.contains('شادی') || lowerQuestion.contains('خوشی')) {
+    } else if (lowerQuestion.contains('شادی') ||
+        lowerQuestion.contains('خوشی')) {
       return _ghazals[2]; // غزل شادی
-    } else if (lowerQuestion.contains('دوست') || lowerQuestion.contains('رفیق')) {
+    } else if (lowerQuestion.contains('دوست') ||
+        lowerQuestion.contains('رفیق')) {
       return _ghazals[3]; // غزل دوستی
-    } else if (lowerQuestion.contains('یاد') || lowerQuestion.contains('تجربه')) {
+    } else if (lowerQuestion.contains('یاد') ||
+        lowerQuestion.contains('تجربه')) {
       return _ghazals[4]; // غزل تجربه
     } else {
       return getRandomFortune();
@@ -94,4 +97,3 @@ class HafezService {
     return List.from(_ghazals);
   }
 }
-

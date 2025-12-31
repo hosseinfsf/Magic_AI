@@ -37,13 +37,17 @@ class Task {
   // ساخت از Map
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
-      id: json['id'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      id: json['id'] ?? DateTime
+          .now()
+          .millisecondsSinceEpoch
+          .toString(),
       title: json['title'] ?? '',
       description: json['description'],
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+          json['createdAt'] ?? DateTime.now().toIso8601String()),
       dueDate: json['dueDate'] != null ? DateTime.parse(json['dueDate']) : null,
       priority: TaskPriority.values.firstWhere(
-        (e) => e.name == json['priority'],
+            (e) => e.name == json['priority'],
         orElse: () => TaskPriority.medium,
       ),
       isCompleted: json['isCompleted'] ?? false,

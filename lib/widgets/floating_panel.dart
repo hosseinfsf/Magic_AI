@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../providers/task_provider.dart';
 import '../core/theme/app_theme.dart';
+import '../providers/task_provider.dart';
 
 /// پنل شناور با تب‌ها: تسک‌ها، لیست خرید، دفترچه، دستیار، ویجت‌ها
 class FloatingPanel extends StatefulWidget {
@@ -15,7 +15,8 @@ class FloatingPanel extends StatefulWidget {
   State<FloatingPanel> createState() => _FloatingPanelState();
 }
 
-class _FloatingPanelState extends State<FloatingPanel> with TickerProviderStateMixin {
+class _FloatingPanelState extends State<FloatingPanel>
+    with TickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _noteController = TextEditingController();
   Timer? _saveTimer;
@@ -77,10 +78,13 @@ class _FloatingPanelState extends State<FloatingPanel> with TickerProviderStateM
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(
                 children: [
-                  Expanded(
+                  const Expanded(
                     child: Text(
                       'مانا',
-                      style: TextStyle(fontSize: 18, color: AppTheme.textPrimary, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: AppTheme.textPrimary,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                   IconButton(
@@ -108,13 +112,16 @@ class _FloatingPanelState extends State<FloatingPanel> with TickerProviderStateM
                 controller: _tabController,
                 children: [
                   _TasksTab(),
-                  _ShoppingTab(onAdd: (item) async {
-                    setState(() => _shopping.add(item));
-                    await _saveShopping();
-                  }, items: _shopping, onRemove: (i) async {
-                    setState(() => _shopping.removeAt(i));
-                    await _saveShopping();
-                  }),
+                  _ShoppingTab(
+                      onAdd: (item) async {
+                        setState(() => _shopping.add(item));
+                        await _saveShopping();
+                      },
+                      items: _shopping,
+                      onRemove: (i) async {
+                        setState(() => _shopping.removeAt(i));
+                        await _saveShopping();
+                      }),
                   _NotebookTab(controller: _noteController),
                   _ManaAssistantTab(),
                   _WidgetCardsTab(),
@@ -136,14 +143,22 @@ class _TasksTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
-        Text('تسک‌های امروز', style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold)),
+        const Text('تسک‌های امروز',
+            style: TextStyle(
+                color: AppTheme.textPrimary, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         ...today.map((t) => Card(
               color: AppTheme.bgCard,
               child: ListTile(
-                title: Text(t.title, style: TextStyle(color: AppTheme.textPrimary)),
-                subtitle: t.dueDate != null ? Text(t.dueDate.toString(), style: TextStyle(color: AppTheme.textSecondary)) : null,
-                trailing: Checkbox(value: t.isCompleted, onChanged: (_) => taskProv.toggleTaskCompletion(t.id)),
+                title: Text(t.title,
+                    style: const TextStyle(color: AppTheme.textPrimary)),
+                subtitle: t.dueDate != null
+                    ? Text(t.dueDate.toString(),
+                        style: const TextStyle(color: AppTheme.textSecondary))
+                    : null,
+                trailing: Checkbox(
+                    value: t.isCompleted,
+                    onChanged: (_) => taskProv.toggleTaskCompletion(t.id)),
               ),
             )),
         const SizedBox(height: 12),
@@ -161,7 +176,8 @@ class _ShoppingTab extends StatelessWidget {
   final List<String> items;
   final void Function(int) onRemove;
 
-  _ShoppingTab({required this.onAdd, required this.items, required this.onRemove});
+  _ShoppingTab(
+      {required this.onAdd, required this.items, required this.onRemove});
 
   final TextEditingController _ctl = TextEditingController();
 
@@ -173,7 +189,11 @@ class _ShoppingTab extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: TextField(controller: _ctl, decoration: const InputDecoration(hintText: 'افزودن آیتم'))),
+              Expanded(
+                  child: TextField(
+                      controller: _ctl,
+                      decoration:
+                          const InputDecoration(hintText: 'افزودن آیتم'))),
               IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () {
@@ -193,8 +213,11 @@ class _ShoppingTab extends StatelessWidget {
               itemBuilder: (context, i) => Card(
                 color: AppTheme.bgCard,
                 child: ListTile(
-                  title: Text(items[i], style: TextStyle(color: AppTheme.textPrimary)),
-                  trailing: IconButton(icon: const Icon(Icons.delete_outline), onPressed: () => onRemove(i)),
+                  title: Text(items[i],
+                      style: const TextStyle(color: AppTheme.textPrimary)),
+                  trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline),
+                      onPressed: () => onRemove(i)),
                 ),
               ),
             ),
@@ -207,6 +230,7 @@ class _ShoppingTab extends StatelessWidget {
 
 class _NotebookTab extends StatelessWidget {
   final TextEditingController controller;
+
   const _NotebookTab({required this.controller});
 
   @override
@@ -219,11 +243,13 @@ class _NotebookTab extends StatelessWidget {
             child: TextField(
               controller: controller,
               maxLines: null,
-              decoration: const InputDecoration(border: InputBorder.none, hintText: 'دفترچه یادداشت...'),
+              decoration: const InputDecoration(
+                  border: InputBorder.none, hintText: 'دفترچه یادداشت...'),
             ),
           ),
           const SizedBox(height: 8),
-          Text('ذخیره خودکار فعال است', style: TextStyle(color: AppTheme.textSecondary)),
+          const Text('ذخیره خودکار فعال است',
+              style: TextStyle(color: AppTheme.textSecondary)),
         ],
       ),
     );
@@ -233,15 +259,17 @@ class _NotebookTab extends StatelessWidget {
 class _ManaAssistantTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('دستیار مانا', style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            const Text('این بخش بعداً با چت و هوش کلیپ‌بورد تکمیل می‌شود'),
+            Text('دستیار مانا',
+                style: TextStyle(
+                    color: AppTheme.textPrimary, fontWeight: FontWeight.bold)),
+            SizedBox(height: 12),
+            Text('این بخش بعداً با چت و هوش کلیپ‌بورد تکمیل می‌شود'),
           ],
         ),
       ),
@@ -255,10 +283,14 @@ class _WidgetCardsTab extends StatelessWidget {
     return GridView.count(
       padding: const EdgeInsets.all(12),
       crossAxisCount: 2,
-      children: List.generate(6, (i) => Card(
-            color: AppTheme.bgCard,
-            child: Center(child: Text('ویجت ${i + 1}', style: TextStyle(color: AppTheme.textPrimary))),
-          )),
+      children: List.generate(
+          6,
+          (i) => Card(
+                color: AppTheme.bgCard,
+                child: Center(
+                    child: Text('ویجت ${i + 1}',
+                        style: const TextStyle(color: AppTheme.textPrimary))),
+              )),
     );
   }
 }

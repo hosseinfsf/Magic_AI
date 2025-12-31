@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+
 import '../core/theme/app_theme.dart';
-import '../providers/user_provider.dart';
 import '../models/user_profile.dart';
+import '../providers/user_provider.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -15,7 +16,7 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int currentPage = 0;
-  
+
   // پاسخ‌های کاربر
   String userName = '';
   String ageGroup = '';
@@ -35,7 +36,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: [
               // Progress Bar
               _buildProgressBar(),
-              
+
               // سوالات
               Expanded(
                 child: PageView(
@@ -71,8 +72,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 2),
               decoration: BoxDecoration(
                 color: index <= currentPage
-            ? AppTheme.secondaryGold
-              : Colors.white.withAlpha((0.3 * 255).round()),
+                    ? AppTheme.secondaryGold
+                    : Colors.white.withAlpha((0.3 * 255).round()),
                 borderRadius: BorderRadius.circular(2),
               ),
             )
@@ -124,10 +125,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
       ),
       onNext: userName.isNotEmpty ? _nextPage : null,
-    )
-        .animate()
-        .fadeIn(duration: 600.ms)
-        .slideX(begin: 0.3, end: 0);
+    ).animate().fadeIn(duration: 600.ms).slideX(begin: 0.3, end: 0);
   }
 
   // سوال ۲: گروه سنی
@@ -159,10 +157,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         }).toList(),
       ),
       showSkip: true,
-    )
-        .animate()
-        .fadeIn(duration: 600.ms)
-        .slideX(begin: 0.3, end: 0);
+    ).animate().fadeIn(duration: 600.ms).slideX(begin: 0.3, end: 0);
   }
 
   // سوال ۳: فعالیت روزانه
@@ -196,10 +191,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
       showBack: true,
       showSkip: true,
-    )
-        .animate()
-        .fadeIn(duration: 600.ms)
-        .slideX(begin: 0.3, end: 0);
+    ).animate().fadeIn(duration: 600.ms).slideX(begin: 0.3, end: 0);
   }
 
   // سوال ۴: ماه تولد
@@ -242,10 +234,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
       showBack: true,
       showSkip: true,
-    )
-        .animate()
-        .fadeIn(duration: 600.ms)
-        .slideX(begin: 0.3, end: 0);
+    ).animate().fadeIn(duration: 600.ms).slideX(begin: 0.3, end: 0);
   }
 
   // سوال ۵: شهر
@@ -262,7 +251,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ];
 
     return _buildQuestionContainer(
-      title: 'آخرین سوال! 🎊\nشهر یا استانت کجاست؟\n(برای آب‌وهوا و پیشنهاد محلی)',
+      title:
+          'آخرین سوال! 🎊\nشهر یا استانت کجاست؟\n(برای آب‌وهوا و پیشنهاد محلی)',
       child: Wrap(
         alignment: WrapAlignment.center,
         spacing: 15,
@@ -274,16 +264,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             isSelected: isSelected,
             onTap: () {
               setState(() => city = cityOption);
-              Future.delayed(const Duration(milliseconds: 500), _finishOnboarding);
+              Future.delayed(
+                  const Duration(milliseconds: 500), _finishOnboarding);
             },
           );
         }).toList(),
       ),
       showBack: true,
-    )
-        .animate()
-        .fadeIn(duration: 600.ms)
-        .slideX(begin: 0.3, end: 0);
+    ).animate().fadeIn(duration: 600.ms).slideX(begin: 0.3, end: 0);
   }
 
   Widget _buildQuestionContainer({
@@ -311,13 +299,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               .animate()
               .fadeIn(duration: 400.ms, delay: 200.ms)
               .slideY(begin: -0.1, end: 0),
-          
+
           const SizedBox(height: 60),
-          
+
           child,
-          
+
           const SizedBox(height: 40),
-          
+
           // دکمه‌ها
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -329,7 +317,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 )
               else
                 const SizedBox(width: 48),
-              
               if (showSkip)
                 TextButton(
                   onPressed: _nextPage,
@@ -338,7 +325,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     style: TextStyle(color: Colors.white70),
                   ),
                 ),
-              
               if (onNext != null)
                 ElevatedButton(
                   onPressed: onNext,
@@ -382,12 +368,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           vertical: compact ? 12 : 16,
         ),
         decoration: BoxDecoration(
-          gradient: isSelected
-              ? AppTheme.purpleGoldGradient
-              : null,
-          color: isSelected ? null : Colors.white.withAlpha((0.1 * 255).round()),
+          gradient: isSelected ? AppTheme.purpleGoldGradient : null,
+          color:
+              isSelected ? null : Colors.white.withAlpha((0.1 * 255).round()),
           borderRadius: BorderRadius.circular(25),
-            border: Border.all(
+          border: Border.all(
             color: isSelected
                 ? Colors.transparent
                 : Colors.white.withAlpha((0.3 * 255).round()),
@@ -396,7 +381,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppTheme.secondaryGold.withAlpha((0.5 * 255).round()),
+                    color:
+                        AppTheme.secondaryGold.withAlpha((0.5 * 255).round()),
                     blurRadius: 15,
                     spreadRadius: 2,
                   ),
@@ -412,9 +398,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
         ),
       ),
-    )
-        .animate(target: isSelected ? 1 : 0)
-        .scale(duration: 200.ms);
+    ).animate(target: isSelected ? 1 : 0).scale(duration: 200.ms);
   }
 
   void _nextPage() {
@@ -446,11 +430,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       createdAt: DateTime.now(),
       hasCompletedOnboarding: true,
     );
-    
+
     // ذخیره پروفایل
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     await userProvider.saveUserProfile(userProfile);
-    
+
     // انتقال به صفحه اصلی
     if (mounted) {
       Navigator.pushReplacementNamed(context, '/home');
@@ -463,4 +447,3 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 }
-

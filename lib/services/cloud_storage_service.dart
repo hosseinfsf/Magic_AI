@@ -1,8 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../models/user_profile.dart';
+import 'package:flutter/foundation.dart';
+
 import '../models/chat_message.dart';
+import '../models/user_profile.dart';
 
 /// سرویس ذخیره‌سازی ابری با Firestore
 class CloudStorageService {
@@ -11,9 +12,12 @@ class CloudStorageService {
 
   // Collection references
   CollectionReference get _usersCollection => _firestore.collection('users');
+
   CollectionReference get _chatsCollection => _firestore.collection('chats');
+
   CollectionReference get _tasksCollection => _firestore.collection('tasks');
-  CollectionReference get _preferencesCollection => 
+
+  CollectionReference get _preferencesCollection =>
       _firestore.collection('user_preferences');
 
   String? get _userId => _auth.currentUser?.uid;
@@ -21,7 +25,7 @@ class CloudStorageService {
   /// ذخیره پروفایل کاربر در ابر
   Future<void> saveUserProfile(UserProfile profile) async {
     if (_userId == null) throw Exception('User not authenticated');
-    
+
     try {
       await _usersCollection.doc(_userId).set({
         ...profile.toJson(),
@@ -36,7 +40,7 @@ class CloudStorageService {
   /// بارگذاری پروفایل کاربر از ابر
   Future<UserProfile?> loadUserProfile() async {
     if (_userId == null) return null;
-    
+
     try {
       final doc = await _usersCollection.doc(_userId).get();
       if (doc.exists && doc.data() != null) {
@@ -52,7 +56,7 @@ class CloudStorageService {
   /// ذخیره پیام‌های چت در ابر
   Future<void> saveChatMessage(ChatMessage message) async {
     if (_userId == null) throw Exception('User not authenticated');
-    
+
     try {
       await _chatsCollection
           .doc(_userId)
@@ -68,7 +72,7 @@ class CloudStorageService {
   /// بارگذاری پیام‌های چت از ابر
   Future<List<ChatMessage>> loadChatMessages({int limit = 100}) async {
     if (_userId == null) return [];
-    
+
     try {
       final snapshot = await _chatsCollection
           .doc(_userId)
@@ -76,7 +80,7 @@ class CloudStorageService {
           .orderBy('timestamp', descending: true)
           .limit(limit)
           .get();
-      
+
       return snapshot.docs
           .map((doc) => ChatMessage.fromJson(doc.data()))
           .toList()
@@ -90,18 +94,16 @@ class CloudStorageService {
   /// پاک کردن چت از ابر
   Future<void> clearChat() async {
     if (_userId == null) throw Exception('User not authenticated');
-    
+
     try {
       final batch = _firestore.batch();
-      final messagesRef = _chatsCollection
-          .doc(_userId)
-          .collection('messages');
-      
+      final messagesRef = _chatsCollection.doc(_userId).collection('messages');
+
       final snapshot = await messagesRef.get();
       for (var doc in snapshot.docs) {
         batch.delete(doc.reference);
       }
-      
+
       await batch.commit();
     } catch (e) {
       debugPrint('Error clearing chat: $e');
@@ -112,7 +114,7 @@ class CloudStorageService {
   /// ذخیره ترجیحات کاربر (برای یادگیری)
   Future<void> saveUserPreferences(Map<String, dynamic> preferences) async {
     if (_userId == null) throw Exception('User not authenticated');
-    
+
     try {
       await _preferencesCollection.doc(_userId).set({
         ...preferences,
@@ -127,7 +129,7 @@ class CloudStorageService {
   /// بارگذاری ترجیحات کاربر
   Future<Map<String, dynamic>> loadUserPreferences() async {
     if (_userId == null) return {};
-    
+
     try {
       final doc = await _preferencesCollection.doc(_userId).get();
       if (doc.exists && doc.data() != null) {
@@ -148,7 +150,7 @@ class CloudStorageService {
     required Map<String, dynamic> context,
   }) async {
     if (_userId == null) return;
-    
+
     try {
       await _firestore
           .collection('user_behaviors')
@@ -170,7 +172,7 @@ class CloudStorageService {
     int limit = 50,
   }) async {
     if (_userId == null) return [];
-    
+
     try {
       final snapshot = await _firestore
           .collection('user_behaviors')
@@ -179,7 +181,7 @@ class CloudStorageService {
           .orderBy('timestamp', descending: true)
           .limit(limit)
           .get();
-      
+
       return snapshot.docs
           .map((doc) => {
                 'id': doc.id,
@@ -198,13 +200,13 @@ class CloudStorageService {
     required List<ChatMessage> localMessages,
   }) async {
     if (_userId == null) return;
-    
+
     try {
       // همگام‌سازی پروفایل
       if (localProfile != null) {
         await saveUserProfile(localProfile);
       }
-      
+
       // همگام‌سازی پیام‌ها
       for (var message in localMessages) {
         await saveChatMessage(message);
@@ -214,4 +216,3 @@ class CloudStorageService {
     }
   }
 }
-

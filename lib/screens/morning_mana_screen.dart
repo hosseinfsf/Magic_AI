@@ -1,12 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+
 import '../core/theme/app_theme.dart';
-import '../services/morning_mana_service.dart';
-import '../providers/user_provider.dart';
 import '../providers/task_provider.dart'; // Get real tasks
+import '../providers/user_provider.dart';
 import '../services/hafez_service.dart'; // For daily omen
+import '../services/morning_mana_service.dart';
 
 // A data class to hold all the morning info
 class MorningManaData {
@@ -63,9 +63,13 @@ class _MorningManaScreenState extends State<MorningManaScreen> {
         _service.getWeather(userProfile?.city ?? 'تهران'),
         _service.getMotivationalQuote(),
         _service.getDailyEvent(),
-        Future.value(HafezService.getRandomFortune()), // Daily Hafez
-        Future.value(taskProvider.todayTasks.map((t) => t.title).toList()), // Real tasks
-        _service.getSportsNews(userProvider.userProfile?.favoriteTeam ?? 'فوتبال'), // Use preference
+        Future.value(HafezService.getRandomFortune()),
+        // Daily Hafez
+        Future.value(taskProvider.todayTasks.map((t) => t.title).toList()),
+        // Real tasks
+        _service
+            .getSportsNews(userProvider.userProfile?.favoriteTeam ?? 'فوتبال'),
+        // Use preference
       ]);
 
       setState(() {
@@ -99,7 +103,8 @@ class _MorningManaScreenState extends State<MorningManaScreen> {
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               title: Text('صبح بخیر $_userName! ☀️',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 18)),
               background: Container(
                 decoration: const BoxDecoration(
                   gradient: AppTheme.mysticalGradient,
@@ -110,7 +115,8 @@ class _MorningManaScreenState extends State<MorningManaScreen> {
           _isLoading
               ? const SliverFillRemaining(
                   child: Center(
-                    child: CircularProgressIndicator(color: AppTheme.secondaryGold),
+                    child: CircularProgressIndicator(
+                        color: AppTheme.secondaryGold),
                   ),
                 )
               : _morningData == null
@@ -132,21 +138,29 @@ class _MorningManaScreenState extends State<MorningManaScreen> {
       sliver: SliverList(
         delegate: SliverChildListDelegate(
           [
-            _buildInfoCard(Icons.wb_sunny_outlined, 'آب و هوا', _morningData!.weather),
+            _buildInfoCard(
+                Icons.wb_sunny_outlined, 'آب و هوا', _morningData!.weather),
             const SizedBox(height: 16),
-            _buildInfoCard(Icons.task_alt, 'کارهای امروز', _morningData!.tasks.join('\n- ')),
+            _buildInfoCard(Icons.task_alt, 'کارهای امروز',
+                _morningData!.tasks.join('\n- ')),
             const SizedBox(height: 16),
-            _buildInfoCard(Icons.auto_stories_outlined, 'فال حافظ', _morningData!.hafezOmen),
+            _buildInfoCard(Icons.auto_stories_outlined, 'فال حافظ',
+                _morningData!.hafezOmen),
             const SizedBox(height: 16),
-            _buildInfoCard(Icons.celebration_outlined, 'مناسبت امروز', _morningData!.dailyEvent),
+            _buildInfoCard(Icons.celebration_outlined, 'مناسبت امروز',
+                _morningData!.dailyEvent),
             const SizedBox(height: 16),
-            _buildInfoCard(Icons.format_quote, 'جمله انگیزشی', _morningData!.motivationalQuote),
-            if (_morningData!.sportsNews != null)
-              ...[
-                const SizedBox(height: 16),
-                _buildInfoCard(Icons.sports_soccer_outlined, 'خبر ورزشی', _morningData!.sportsNews!),
-              ],
-          ].animate(interval: 100.ms).fadeIn(duration: 400.ms).slideY(begin: 0.2, end: 0),
+            _buildInfoCard(Icons.format_quote, 'جمله انگیزشی',
+                _morningData!.motivationalQuote),
+            if (_morningData!.sportsNews != null) ...[
+              const SizedBox(height: 16),
+              _buildInfoCard(Icons.sports_soccer_outlined, 'خبر ورزشی',
+                  _morningData!.sportsNews!),
+            ],
+          ]
+              .animate(interval: 100.ms)
+              .fadeIn(duration: 400.ms)
+              .slideY(begin: 0.2, end: 0),
         ),
       ),
     );
@@ -159,7 +173,8 @@ class _MorningManaScreenState extends State<MorningManaScreen> {
       color: AppTheme.bgCard.withOpacity(0.8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: AppTheme.primaryPurple.withOpacity(0.3), width: 1),
+        side: BorderSide(
+            color: AppTheme.primaryPurple.withOpacity(0.3), width: 1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -170,13 +185,18 @@ class _MorningManaScreenState extends State<MorningManaScreen> {
               children: [
                 Icon(icon, color: AppTheme.secondaryGold, size: 24),
                 const SizedBox(width: 12),
-                Text(title, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white)),
+                Text(title,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineMedium
+                        ?.copyWith(color: Colors.white)),
               ],
             ),
             const SizedBox(height: 12),
             Text(
               content,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.7),
+              style:
+                  Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.7),
             ),
           ],
         ),
@@ -185,7 +205,7 @@ class _MorningManaScreenState extends State<MorningManaScreen> {
   }
 
   Widget _buildErrorState() {
-     return const SliverFillRemaining(
+    return const SliverFillRemaining(
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

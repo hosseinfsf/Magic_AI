@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+
 import '../core/theme/app_theme.dart';
 
 class HafezOmenWidget extends StatelessWidget {
@@ -71,7 +71,8 @@ class HafezOmenWidget extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 ),
                 child: const Text("نیت کن و دوباره بگیر"),
               ),

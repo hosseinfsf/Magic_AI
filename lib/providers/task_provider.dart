@@ -1,6 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+
 import '../models/task.dart';
 import '../services/cloud_storage_service.dart';
 
@@ -14,8 +15,11 @@ class TaskProvider with ChangeNotifier {
   bool _isLoading = false;
 
   List<Task> get tasks => _tasks;
+
   List<Task> get completedTasks => _tasks.where((t) => t.isCompleted).toList();
+
   List<Task> get pendingTasks => _tasks.where((t) => !t.isCompleted).toList();
+
   bool get isLoading => _isLoading;
 
   String? get _userId => _auth.currentUser?.uid;
@@ -23,7 +27,7 @@ class TaskProvider with ChangeNotifier {
   // بارگذاری کارها از ابر
   Future<void> loadTasks() async {
     if (_userId == null) return;
-    
+
     _isLoading = true;
     notifyListeners();
 
@@ -35,9 +39,7 @@ class TaskProvider with ChangeNotifier {
           .orderBy('createdAt', descending: true)
           .get();
 
-      _tasks = snapshot.docs
-          .map((doc) => Task.fromJson(doc.data()))
-          .toList();
+      _tasks = snapshot.docs.map((doc) => Task.fromJson(doc.data())).toList();
     } catch (e) {
       debugPrint('Error loading tasks: $e');
     } finally {
@@ -136,4 +138,3 @@ class TaskProvider with ChangeNotifier {
     }).toList();
   }
 }
-

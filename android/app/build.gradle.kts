@@ -37,6 +37,9 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+    
+    // FORCING Build Tools version to 34.0.0 which is installed on user's system to fix aapt error
+    buildToolsVersion = "34.0.0" 
 }
 
 flutter {

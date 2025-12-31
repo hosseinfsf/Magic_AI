@@ -1,8 +1,9 @@
-import 'package:flutter/foundation.dart';
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'dart:io';
 
 /// سرویس احراز هویت با Firebase
 class AuthService {
@@ -11,10 +12,10 @@ class AuthService {
 
   // جریان تغییرات کاربر
   Stream<User?> get authStateChanges => _auth.authStateChanges();
-  
+
   // کاربر فعلی
   User? get currentUser => _auth.currentUser;
-  
+
   // آیا کاربر لاگین است؟
   bool get isSignedIn => _auth.currentUser != null;
 
@@ -23,14 +24,14 @@ class AuthService {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      
+
       if (googleUser == null) {
         // User canceled the sign-in
         return null;
       }
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = 
+      final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
       // Create a new credential
@@ -52,7 +53,8 @@ class AuthService {
     try {
       // فقط برای iOS و macOS
       if (!Platform.isIOS && !Platform.isMacOS) {
-        throw Exception('Sign in with Apple is only available on iOS and macOS');
+        throw Exception(
+            'Sign in with Apple is only available on iOS and macOS');
       }
 
       // Request credential
@@ -159,4 +161,3 @@ class AuthService {
     }
   }
 }
-

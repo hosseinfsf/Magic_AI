@@ -1,37 +1,39 @@
 /// مدل ترجیحات و علایق کاربر (برای یادگیری AI)
 class UserPreferences {
   // ترجیحات لحن
-  final String preferredTone; // 'formal', 'casual', 'friendly', 'funny', 'professional'
-  
+  final String
+      preferredTone; // 'formal', 'casual', 'friendly', 'funny', 'professional'
+
   // علایق
   final List<String> interests; // ['sports', 'music', 'tech', ...]
   final List<String> favoriteTopics;
-  
+
   // عادت‌ها
-  final Map<String, String> habits; // {'wakeTime': '07:00', 'sleepTime': '23:00'}
+  final Map<String, String>
+      habits; // {'wakeTime': '07:00', 'sleepTime': '23:00'}
   final List<String> activeHours; // ['morning', 'afternoon', 'evening']
-  
+
   // ترجیحات محتوا
   final bool likesEmojis;
   final bool likesLongMessages;
   final String preferredLanguage; // 'fa', 'en', 'mixed'
-  
+
   // ترجیحات فال
   final bool wantsDailyFortune;
   final String fortuneStyle; // 'detailed', 'short', 'poetic'
-  
+
   // ترجیحات صبحانه/شب‌نامه
   final bool wantsMorningMana;
   final bool wantsNightSummary;
   final List<String> morningFeatures; // ['weather', 'fortune', 'tasks', ...]
   final List<String> nightFeatures; // ['summary', 'music', 'journal', ...]
-  
+
   // ترجیحات شبکه‌های اجتماعی
   final Map<String, String> socialMediaPreferences;
-  
+
   // آمار استفاده
   final Map<String, int> usageStats; // {'chat': 50, 'fortune': 20, ...}
-  
+
   // آخرین به‌روزرسانی
   final DateTime lastUpdated;
 
@@ -93,9 +95,12 @@ class UserPreferences {
       fortuneStyle: json['fortuneStyle'] ?? 'detailed',
       wantsMorningMana: json['wantsMorningMana'] ?? true,
       wantsNightSummary: json['wantsNightSummary'] ?? true,
-      morningFeatures: List<String>.from(json['morningFeatures'] ?? ['weather', 'fortune', 'tasks']),
-      nightFeatures: List<String>.from(json['nightFeatures'] ?? ['summary', 'music']),
-      socialMediaPreferences: Map<String, String>.from(json['socialMediaPreferences'] ?? {}),
+      morningFeatures: List<String>.from(
+          json['morningFeatures'] ?? ['weather', 'fortune', 'tasks']),
+      nightFeatures:
+          List<String>.from(json['nightFeatures'] ?? ['summary', 'music']),
+      socialMediaPreferences:
+          Map<String, String>.from(json['socialMediaPreferences'] ?? {}),
       usageStats: Map<String, int>.from(json['usageStats'] ?? {}),
       lastUpdated: json['lastUpdated'] != null
           ? DateTime.parse(json['lastUpdated'])
@@ -137,10 +142,10 @@ class UserPreferences {
       wantsNightSummary: wantsNightSummary ?? this.wantsNightSummary,
       morningFeatures: morningFeatures ?? this.morningFeatures,
       nightFeatures: nightFeatures ?? this.nightFeatures,
-      socialMediaPreferences: socialMediaPreferences ?? this.socialMediaPreferences,
+      socialMediaPreferences:
+          socialMediaPreferences ?? this.socialMediaPreferences,
       usageStats: usageStats ?? this.usageStats,
       lastUpdated: DateTime.now(),
     );
   }
 }
-

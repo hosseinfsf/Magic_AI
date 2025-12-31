@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+
 import '../models/user_preferences.dart';
 import '../services/cloud_storage_service.dart';
 import '../services/gemini_service.dart';
@@ -7,18 +8,17 @@ import '../services/gemini_service.dart';
 class AILearningService {
   final CloudStorageService _cloudStorage = CloudStorageService();
   final GeminiService _geminiService = GeminiService();
-  
+
   UserPreferences? _cachedPreferences;
 
   /// بارگذاری ترجیحات کاربر
   Future<UserPreferences> loadPreferences() async {
     if (_cachedPreferences != null) return _cachedPreferences!;
-    
+
     try {
       final data = await _cloudStorage.loadUserPreferences();
-      _cachedPreferences = data.isEmpty
-          ? UserPreferences()
-          : UserPreferences.fromJson(data);
+      _cachedPreferences =
+          data.isEmpty ? UserPreferences() : UserPreferences.fromJson(data);
       return _cachedPreferences!;
     } catch (e) {
       debugPrint('Error loading preferences: $e');
@@ -57,7 +57,7 @@ class AILearningService {
       final preferences = await loadPreferences();
       final updatedStats = Map<String, int>.from(preferences.usageStats);
       updatedStats[action] = (updatedStats[action] ?? 0) + 1;
-      
+
       await savePreferences(preferences.copyWith(usageStats: updatedStats));
 
       // تحلیل لحن و علایق از پیام کاربر
@@ -87,14 +87,13 @@ class AILearningService {
 ''';
 
       final response = await _geminiService.sendMessage(prompt);
-      
+
       // Parse response and update preferences
       // (در پروژه واقعی از json_serializable استفاده کنید)
       final preferences = await loadPreferences();
-      
+
       // به‌روزرسانی ترجیحات بر اساس تحلیل
       // این یک پیاده‌سازی ساده است - می‌توانید پیچیده‌تر کنید
-      
     } catch (e) {
       debugPrint('Error analyzing user message: $e');
     }
@@ -107,8 +106,9 @@ class AILearningService {
   }) async {
     try {
       final preferences = await loadPreferences();
-      final behaviorHistory = await _cloudStorage.loadUserBehaviorHistory(limit: 20);
-      
+      final behaviorHistory =
+          await _cloudStorage.loadUserBehaviorHistory(limit: 20);
+
       final prompt = '''
 شما "مانا" هستید - دستیار هوشمند کاربر.
 
@@ -177,8 +177,9 @@ ${behaviorHistory.take(5).map((b) => '- ${b['action']}: ${b['context']}').join('
   Future<String> getUserPersonalitySummary() async {
     try {
       final preferences = await loadPreferences();
-      final behaviorHistory = await _cloudStorage.loadUserBehaviorHistory(limit: 50);
-      
+      final behaviorHistory =
+          await _cloudStorage.loadUserBehaviorHistory(limit: 50);
+
       return '''
 شخصیت کاربر:
 - لحن مورد علاقه: ${preferences.preferredTone}
@@ -195,4 +196,3 @@ ${behaviorHistory.take(5).map((b) => '- ${b['action']}: ${b['context']}').join('
     }
   }
 }
-

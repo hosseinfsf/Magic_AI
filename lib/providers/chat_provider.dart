@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+
 import '../models/chat_message.dart';
 
 /// Provider برای مدیریت چت
@@ -11,8 +13,11 @@ class ChatProvider with ChangeNotifier {
   String? _errorMessage;
 
   List<ChatMessage> get messages => _messages;
+
   bool get isLoading => _isLoading;
+
   bool get hasError => _hasError;
+
   String? get errorMessage => _errorMessage;
 
   // بارگذاری پیام‌ها از SharedPreferences
@@ -20,7 +25,7 @@ class ChatProvider with ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final messagesJson = prefs.getString('chat_messages');
-      
+
       if (messagesJson != null) {
         final List<dynamic> messagesList = json.decode(messagesJson);
         _messages = messagesList
@@ -68,7 +73,8 @@ class ChatProvider with ChangeNotifier {
   }
 
   // افزودن پیام دستیار
-  void addAssistantMessage(String text, {MessageType? type, Map<String, dynamic>? metadata}) {
+  void addAssistantMessage(String text,
+      {MessageType? type, Map<String, dynamic>? metadata}) {
     final message = ChatMessage(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       text: text,
@@ -98,14 +104,14 @@ class ChatProvider with ChangeNotifier {
     _messages.clear();
     _hasError = false;
     _errorMessage = null;
-    
+
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('chat_messages');
     } catch (e) {
       debugPrint('Error clearing chat: $e');
     }
-    
+
     notifyListeners();
   }
 
@@ -126,4 +132,3 @@ class ChatProvider with ChangeNotifier {
     }
   }
 }
-

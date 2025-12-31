@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
-import '../services/gemini_service.dart';
-import '../services/ai_learning_service.dart';
-import '../models/user_profile.dart';
+
 import '../models/user_preferences.dart';
+import '../models/user_profile.dart';
+import '../services/ai_learning_service.dart';
+import '../services/gemini_service.dart';
 
 /// سرویس شب‌نامه مانا (Night Summary)
 class NightSummaryService {
@@ -20,7 +21,7 @@ class NightSummaryService {
   }) async {
     try {
       final userName = userProfile?.name ?? 'عزیزم';
-      
+
       final prompt = '''
 شما "مانا" هستید - دستیار صمیمی کاربر.
 
@@ -51,18 +52,19 @@ ${preferences != null ? '''
 ''';
 
       final response = await _geminiService.sendMessage(prompt);
-      
+
       // یادگیری از این تعامل
       await _aiLearning.learnFromInteraction(
         userMessage: 'night_summary_request',
         aiResponse: response,
         action: 'night_summary',
       );
-      
+
       return response;
     } catch (e) {
       debugPrint('Error generating night summary: $e');
-      return _getDefaultNightMessage(userProfile?.name ?? 'عزیزم', completedTasks, totalTasks);
+      return _getDefaultNightMessage(
+          userProfile?.name ?? 'عزیزم', completedTasks, totalTasks);
     }
   }
 
@@ -93,4 +95,3 @@ ${preferences != null ? '''
     return 'سریال خانه پوشالی 🎬';
   }
 }
-

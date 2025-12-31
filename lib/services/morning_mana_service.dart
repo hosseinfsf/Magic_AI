@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
+
+import '../models/user_preferences.dart';
+import '../models/user_profile.dart';
+import '../services/ai_learning_service.dart';
 import '../services/gemini_service.dart';
 import '../services/hafez_service.dart';
-import '../services/ai_learning_service.dart';
-import '../models/user_profile.dart';
-import '../models/user_preferences.dart';
 
 /// سرویس صبحانه مانا (Morning Mana)
 class MorningManaService {
@@ -23,14 +24,14 @@ class MorningManaService {
       final userName = userProfile?.name ?? 'عزیزم';
       final birthMonth = userProfile?.birthMonth ?? '';
       final city = userProfile?.city ?? '';
-      
-    // گرفتن فال حافظ
-    final fortune = birthMonth.isNotEmpty
-      ? HafezService.getFortuneByMonth(birthMonth)
-      : HafezService.getRandomFortune();
-      
+
+      // گرفتن فال حافظ
+      final fortune = birthMonth.isNotEmpty
+          ? HafezService.getFortuneByMonth(birthMonth)
+          : HafezService.getRandomFortune();
+
       final ghazal = fortune['text'] ?? '';
-      
+
       // ساخت پیام صبحانه
       final prompt = '''
 شما "مانا" هستید - دستیار صمیمی کاربر.
@@ -68,14 +69,14 @@ ${preferences != null ? '''
 ''';
 
       final response = await _geminiService.sendMessage(prompt);
-      
+
       // یادگیری از این تعامل
       await _aiLearning.learnFromInteraction(
         userMessage: 'morning_mana_request',
         aiResponse: response,
         action: 'morning_mana',
       );
-      
+
       return response;
     } catch (e) {
       debugPrint('Error generating morning mana: $e');
@@ -109,4 +110,3 @@ ${preferences != null ? '''
     return '$favoriteTeam دیشب برد! ⚽';
   }
 }
-

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+
 import '../core/theme/app_theme.dart';
-import '../services/auth_service.dart';
 import '../providers/user_provider.dart';
+import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -39,7 +40,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       gradient: AppTheme.purpleGoldGradient,
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.secondaryGold.withAlpha((0.5 * 255).round()),
+                          color: AppTheme.secondaryGold
+                              .withAlpha((0.5 * 255).round()),
                           blurRadius: 30,
                           spreadRadius: 10,
                         ),
@@ -54,9 +56,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       .animate()
                       .scale(duration: 600.ms, delay: 200.ms)
                       .fadeIn(duration: 600.ms),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // عنوان
                   const Text(
                     'خوش اومدی به مانا! 🐱✨',
@@ -70,10 +72,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       .animate()
                       .fadeIn(duration: 600.ms, delay: 400.ms)
                       .slideY(begin: -0.2, end: 0),
-                  
+
                   const SizedBox(height: 8),
-                  
-                  Text(
+
+                  const Text(
                     'برای ادامه، وارد حساب کاربریت بشو',
                     style: TextStyle(
                       color: Colors.white70,
@@ -84,9 +86,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       .animate()
                       .fadeIn(duration: 600.ms, delay: 600.ms)
                       .slideY(begin: -0.2, end: 0),
-                  
+
                   const SizedBox(height: 48),
-                  
+
                   // دکمه Google
                   _buildSocialButton(
                     icon: Icons.g_mobiledata,
@@ -98,9 +100,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       .animate()
                       .fadeIn(duration: 600.ms, delay: 800.ms)
                       .slideX(begin: 0.2, end: 0),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // دکمه Apple
                   _buildSocialButton(
                     icon: Icons.apple,
@@ -112,26 +114,32 @@ class _LoginScreenState extends State<LoginScreen> {
                       .animate()
                       .fadeIn(duration: 600.ms, delay: 1000.ms)
                       .slideX(begin: 0.2, end: 0),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // یا
                   Row(
                     children: [
-                      Expanded(child: Divider(color: Colors.white.withAlpha((0.3 * 255).round()))),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                      Expanded(
+                          child: Divider(
+                              color:
+                                  Colors.white.withAlpha((0.3 * 255).round()))),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           'یا',
                           style: TextStyle(color: Colors.white70),
                         ),
                       ),
-                      Expanded(child: Divider(color: Colors.white.withAlpha((0.3 * 255).round()))),
+                      Expanded(
+                          child: Divider(
+                              color:
+                                  Colors.white.withAlpha((0.3 * 255).round()))),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // ادامه بدون ورود
                   TextButton(
                     onPressed: _continueWithoutLogin,
@@ -142,10 +150,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontSize: 16,
                       ),
                     ),
-                  )
-                      .animate()
-                      .fadeIn(duration: 600.ms, delay: 1200.ms),
-                  
+                  ).animate().fadeIn(duration: 600.ms, delay: 1200.ms),
+
                   if (_isLoading)
                     const Padding(
                       padding: EdgeInsets.only(top: 24),
@@ -210,15 +216,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _signInWithGoogle() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final userCredential = await _authService.signInWithGoogle();
-      
+
       if (userCredential?.user != null && mounted) {
         // بارگذاری پروفایل از ابر
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         await userProvider.loadUserProfile();
-        
+
         // انتقال به صفحه اصلی
         Navigator.pushReplacementNamed(context, '/home');
       }
@@ -240,15 +246,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _signInWithApple() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final userCredential = await _authService.signInWithApple();
-      
+
       if (userCredential?.user != null && mounted) {
         // بارگذاری پروفایل از ابر
         final userProvider = Provider.of<UserProvider>(context, listen: false);
         await userProvider.loadUserProfile();
-        
+
         // انتقال به صفحه اصلی
         Navigator.pushReplacementNamed(context, '/home');
       }
@@ -272,4 +278,3 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.pushReplacementNamed(context, '/home');
   }
 }
-

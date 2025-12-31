@@ -1,6 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'dart:math' as math;
 
 /// آیکون شناور متحرک مانا با انیمیشن زنده
 /// امکانات: drag, double tap, long press, pulse animation
@@ -24,26 +25,26 @@ class FloatingManaIcon extends StatefulWidget {
   State<FloatingManaIcon> createState() => _FloatingManaIconState();
 }
 
-class _FloatingManaIconState extends State<FloatingManaIcon> 
+class _FloatingManaIconState extends State<FloatingManaIcon>
     with TickerProviderStateMixin {
   Offset position = const Offset(300, 500);
   bool isDragging = false;
   late AnimationController _pulseController;
   late AnimationController _rotateController;
-  
+
   // انتخاب آیکون (گربه، سگ، ماه، خرگوش، خرس تدی)
   IconType selectedIcon = IconType.cat;
 
   @override
   void initState() {
     super.initState();
-    
+
     // انیمیشن pulse (هر ۳ ثانیه)
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
-    
+
     // انیمیشن چرخش ملایم
     _rotateController = AnimationController(
       vsync: this,
@@ -61,7 +62,7 @@ class _FloatingManaIconState extends State<FloatingManaIcon>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    
+
     return Positioned(
       left: position.dx,
       top: position.dy,
@@ -103,10 +104,10 @@ class _FloatingManaIconState extends State<FloatingManaIcon>
         AnimatedBuilder(
           animation: _pulseController,
           builder: (context, child) {
-        final base = widget.size;
-        return Container(
-          width: base + (_pulseController.value * (base * 0.15)),
-          height: base + (_pulseController.value * (base * 0.15)),
+            final base = widget.size;
+            return Container(
+              width: base + (_pulseController.value * (base * 0.15)),
+              height: base + (_pulseController.value * (base * 0.15)),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: widget.clipboardActive
@@ -120,7 +121,8 @@ class _FloatingManaIconState extends State<FloatingManaIcon>
                   BoxShadow(
                     color: widget.clipboardActive
                         ? Colors.red.withAlpha((0.5 * 255).round())
-                        : const Color(0xFF7C3AED).withAlpha((0.5 * 255).round()),
+                        : const Color(0xFF7C3AED)
+                            .withAlpha((0.5 * 255).round()),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
@@ -129,7 +131,7 @@ class _FloatingManaIconState extends State<FloatingManaIcon>
             );
           },
         ),
-        
+
         // آیکون اصلی
         Container(
           width: widget.size * 0.85,
@@ -148,7 +150,7 @@ class _FloatingManaIconState extends State<FloatingManaIcon>
             },
           ),
         ),
-        
+
         // Badge برای نوتیفیکیشن
         if (widget.clipboardActive)
           Positioned(
@@ -243,14 +245,14 @@ class CatPainter extends CustomPainter {
     final paint = Paint()
       ..color = const Color(0xFF7C3AED)
       ..style = PaintingStyle.fill;
-    
+
     // سر گربه
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
       size.width * 0.35,
       paint,
     );
-    
+
     // گوش چپ
     final leftEarPath = Path()
       ..moveTo(size.width * 0.25, size.height * 0.3)
@@ -258,7 +260,7 @@ class CatPainter extends CustomPainter {
       ..lineTo(size.width * 0.35, size.height * 0.2)
       ..close();
     canvas.drawPath(leftEarPath, paint);
-    
+
     // گوش راست
     final rightEarPath = Path()
       ..moveTo(size.width * 0.75, size.height * 0.3)
@@ -266,7 +268,7 @@ class CatPainter extends CustomPainter {
       ..lineTo(size.width * 0.65, size.height * 0.2)
       ..close();
     canvas.drawPath(rightEarPath, paint);
-    
+
     // چشم‌ها
     final eyePaint = Paint()..color = const Color(0xFFEAB308);
     canvas.drawCircle(
@@ -279,7 +281,7 @@ class CatPainter extends CustomPainter {
       size.width * 0.08,
       eyePaint,
     );
-    
+
     // دهن (لبخند کوچولو)
     final smilePath = Path()
       ..moveTo(size.width * 0.4, size.height * 0.65)
@@ -308,14 +310,14 @@ class MoonPainter extends CustomPainter {
     final paint = Paint()
       ..color = const Color(0xFFEAB308)
       ..style = PaintingStyle.fill;
-    
+
     // هلال ماه
     canvas.drawCircle(
       Offset(size.width * 0.5, size.height * 0.5),
       size.width * 0.4,
       paint,
     );
-    
+
     // سایه برای شکل هلال
     paint.color = const Color(0xFF0F0920);
     canvas.drawCircle(
@@ -323,12 +325,12 @@ class MoonPainter extends CustomPainter {
       size.width * 0.35,
       paint,
     );
-    
+
     // ستاره‌های کوچولو
     paint
       ..color = const Color(0xFFEAB308)
       ..style = PaintingStyle.fill;
-    
+
     _drawStar(canvas, Offset(size.width * 0.15, size.height * 0.2), 3, paint);
     _drawStar(canvas, Offset(size.width * 0.85, size.height * 0.3), 2.5, paint);
     _drawStar(canvas, Offset(size.width * 0.75, size.height * 0.75), 2, paint);
@@ -361,28 +363,28 @@ class TeddyBearPainter extends CustomPainter {
     final paint = Paint()
       ..color = const Color(0xFFB8860B)
       ..style = PaintingStyle.fill;
-    
+
     // سر
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
       size.width * 0.35,
       paint,
     );
-    
+
     // گوش چپ
     canvas.drawCircle(
       Offset(size.width * 0.25, size.height * 0.25),
       size.width * 0.15,
       paint,
     );
-    
+
     // گوش راست
     canvas.drawCircle(
       Offset(size.width * 0.75, size.height * 0.25),
       size.width * 0.15,
       paint,
     );
-    
+
     // چشم‌ها
     final eyePaint = Paint()..color = Colors.black;
     canvas.drawCircle(
@@ -395,7 +397,7 @@ class TeddyBearPainter extends CustomPainter {
       size.width * 0.06,
       eyePaint,
     );
-    
+
     // بینی
     paint.color = const Color(0xFF654321);
     canvas.drawCircle(
@@ -408,4 +410,3 @@ class TeddyBearPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-

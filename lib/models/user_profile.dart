@@ -1,4 +1,3 @@
-
 /// مدل پروفایل کاربر
 class UserProfile {
   final String name;
@@ -43,7 +42,8 @@ class UserProfile {
       dailyActivity: json['dailyActivity'] ?? '',
       birthMonth: json['birthMonth'] ?? '',
       city: json['city'] ?? '',
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      createdAt:
+          DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
       hasCompletedOnboarding: json['hasCompletedOnboarding'] ?? false,
       favoriteTeam: json['favoriteTeam'] as String?,
     );
@@ -67,7 +67,8 @@ class UserProfile {
       birthMonth: birthMonth ?? this.birthMonth,
       city: city ?? this.city,
       createdAt: createdAt ?? this.createdAt,
-      hasCompletedOnboarding: hasCompletedOnboarding ?? this.hasCompletedOnboarding,
+      hasCompletedOnboarding:
+          hasCompletedOnboarding ?? this.hasCompletedOnboarding,
       favoriteTeam: favoriteTeam ?? this.favoriteTeam,
     );
   }

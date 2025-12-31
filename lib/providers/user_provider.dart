@@ -1,7 +1,8 @@
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+
 import '../models/user_profile.dart';
 
 class UserProvider with ChangeNotifier {
@@ -9,7 +10,9 @@ class UserProvider with ChangeNotifier {
   bool _isLoading = false;
 
   UserProfile? get userProfile => _userProfile;
+
   bool get isLoading => _isLoading;
+
   bool get hasProfile => _userProfile != null;
 
   Future<void> loadUserProfile() async {

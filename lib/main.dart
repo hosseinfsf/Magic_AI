@@ -1,24 +1,22 @@
-
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
 
 // --- App Structure ---
 import 'core/theme/app_theme.dart';
-import 'screens/onboarding_screen.dart';
+import 'providers/chat_provider.dart';
+import 'providers/settings_provider.dart';
+import 'providers/task_provider.dart';
+import 'providers/user_provider.dart';
 import 'screens/home_screen.dart';
-import 'screens/settings_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/morning_mana_screen.dart';
 import 'screens/night_summary_screen.dart';
-import 'providers/user_provider.dart';
-import 'providers/chat_provider.dart';
-import 'providers/task_provider.dart';
-import 'providers/settings_provider.dart';
+import 'screens/onboarding_screen.dart';
+import 'screens/settings_screen.dart';
 import 'widgets/floating_icon.dart';
 import 'widgets/floating_panel.dart';
-import 'services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,10 +31,12 @@ class ManaApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()..loadUserProfile()),
+        ChangeNotifierProvider(
+            create: (_) => UserProvider()..loadUserProfile()),
         ChangeNotifierProvider(create: (_) => ChatProvider()..loadMessages()),
         ChangeNotifierProvider(create: (_) => TaskProvider()..loadTasks()),
-        ChangeNotifierProvider(create: (_) => SettingsProvider()..loadSettings()),
+        ChangeNotifierProvider(
+            create: (_) => SettingsProvider()..loadSettings()),
       ],
       child: MaterialApp(
         title: 'مانا - دستیار هوشمند',
@@ -74,7 +74,8 @@ class ManaApp extends StatelessWidget {
                   onLongPress: () {
                     Navigator.pushNamed(context, '/settings');
                   },
-                  clipboardActive: false, // This will be handled in HomeScreen
+                  clipboardActive: false,
+                  // This will be handled in HomeScreen
                   size: settings.floatingSize,
                   opacity: settings.floatingOpacity,
                 ),
@@ -141,9 +142,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   ],
                 ),
                 child: const Icon(Icons.pets, size: 60, color: Colors.white),
-              )
-                  .animate(onPlay: (controller) => controller.repeat())
-                  .scale(
+              ).animate(onPlay: (controller) => controller.repeat()).scale(
                     duration: 1500.ms,
                     begin: const Offset(1, 1),
                     end: const Offset(1.1, 1.1),
@@ -157,10 +156,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
                 ),
-              )
-                  .animate()
-                  .fadeIn(duration: 600.ms)
-                  .slideY(begin: -0.2, end: 0),
+              ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.2, end: 0),
               const SizedBox(height: 8),
               const Text(
                 'دستیار هوشمند شما',

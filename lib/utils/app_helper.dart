@@ -3,7 +3,8 @@ import 'package:intl/intl.dart';
 /// کلاس کمکی برای توابع عمومی
 class AppHelper {
   /// فرمت کردن تاریخ
-  static String formatDate(DateTime date, {String format = 'yyyy/MM/dd HH:mm'}) {
+  static String formatDate(DateTime date,
+      {String format = 'yyyy/MM/dd HH:mm'}) {
     return DateFormat(format, 'fa').format(date);
   }
 
@@ -20,7 +21,9 @@ class AppHelper {
 
   /// بررسی اینکه آیا متن خالی است
   static bool isEmpty(String? text) {
-    return text == null || text.trim().isEmpty;
+    return text == null || text
+        .trim()
+        .isEmpty;
   }
 
   /// محدود کردن طول متن
@@ -45,7 +48,7 @@ class AppHelper {
   static String toPersianNumber(String text) {
     const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     const persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-    
+
     String result = text;
     for (int i = 0; i < english.length; i++) {
       result = result.replaceAll(english[i], persian[i]);
@@ -57,7 +60,7 @@ class AppHelper {
   static String toEnglishNumber(String text) {
     const persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
     const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    
+
     String result = text;
     for (int i = 0; i < persian.length; i++) {
       result = result.replaceAll(persian[i], english[i]);
@@ -67,7 +70,10 @@ class AppHelper {
 
   /// تولید ID منحصر به فرد
   static String generateId() {
-    return DateTime.now().millisecondsSinceEpoch.toString();
+    return DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString();
   }
 
   /// بررسی اعتبار ایمیل
@@ -77,7 +83,8 @@ class AppHelper {
 
   /// بررسی اعتبار شماره تلفن ایرانی
   static bool isValidIranianPhone(String phone) {
-    return RegExp(r'^09\d{9}$').hasMatch(phone.replaceAll(RegExp(r'[\s-]'), ''));
+    return RegExp(r'^09\d{9}$').hasMatch(
+        phone.replaceAll(RegExp(r'[\s-]'), ''));
   }
 }
 

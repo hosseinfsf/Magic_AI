@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+
 import '../core/theme/app_theme.dart';
 
 /// نشانگر تایپ کردن (برای نمایش هنگام پاسخ دادن دستیار)
@@ -11,9 +12,9 @@ class TypingIndicator extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppTheme.bgCard,
-        borderRadius: const BorderRadius.only(
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
           bottomLeft: Radius.circular(4),
@@ -51,4 +52,3 @@ class TypingIndicator extends StatelessWidget {
         .fadeOut(duration: 600.ms);
   }
 }
-

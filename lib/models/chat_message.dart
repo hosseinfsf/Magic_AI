@@ -34,11 +34,14 @@ class ChatMessage {
       id: json['id'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
       text: json['text'] ?? '',
       isUser: json['isUser'] ?? false,
-      timestamp: DateTime.parse(json['timestamp'] ?? DateTime.now().toIso8601String()),
-      type: json['type'] != null ? MessageType.values.firstWhere(
-        (e) => e.name == json['type'],
-        orElse: () => MessageType.text,
-      ) : null,
+      timestamp:
+          DateTime.parse(json['timestamp'] ?? DateTime.now().toIso8601String()),
+      type: json['type'] != null
+          ? MessageType.values.firstWhere(
+              (e) => e.name == json['type'],
+              orElse: () => MessageType.text,
+            )
+          : null,
       metadata: json['metadata'],
     );
   }
@@ -70,4 +73,3 @@ enum MessageType {
   summary,
   toneDetection,
 }
-

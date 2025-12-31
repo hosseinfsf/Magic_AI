@@ -27,7 +27,7 @@ dependencies:
   hive_flutter: ^1.1.0
   
   # Network & API
-  http: ^1.6.0 # Updated version
+  http: ^1.6.0
   dio: ^5.4.3+1
   google_generative_ai: ^0.4.3
   
@@ -51,7 +51,6 @@ dependencies:
   # Icons & Assets
   flutter_svg: ^2.0.10+1
   cached_network_image: ^3.3.1
-  get_x: ^5.0.0
 
 dev_dependencies:
   flutter_test:

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+
 import '../core/theme/app_theme.dart';
-import '../services/night_summary_service.dart';
-import '../providers/user_provider.dart';
 import '../providers/chat_provider.dart';
+import '../providers/user_provider.dart';
+import '../services/night_summary_service.dart';
 
 class NightSummaryScreen extends StatefulWidget {
   const NightSummaryScreen({super.key});
@@ -35,19 +36,19 @@ class _NightSummaryScreenState extends State<NightSummaryScreen> {
 
   Future<void> _loadNightSummary() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final chatProvider = Provider.of<ChatProvider>(context, listen: false);
       final userProfile = userProvider.userProfile;
-      
+
       // محاسبه کارهای انجام شده (در پروژه واقعی از Task Provider بگیرید)
       _completedTasks = 3; // مثال
       _totalTasks = 5;
-      
+
       final musicSuggestion = await _service.suggestMusic(null);
       final movieSuggestion = await _service.suggestMovie(null);
-      
+
       final message = await _service.generateNightSummary(
         userProfile: userProfile,
         preferences: null,
@@ -56,7 +57,7 @@ class _NightSummaryScreenState extends State<NightSummaryScreen> {
         musicSuggestion: musicSuggestion,
         movieSuggestion: movieSuggestion,
       );
-      
+
       setState(() {
         _nightMessage = message;
         _isLoading = false;
@@ -81,7 +82,8 @@ class _NightSummaryScreenState extends State<NightSummaryScreen> {
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppTheme.secondaryGold),
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(AppTheme.secondaryGold),
               ),
             )
           : SingleChildScrollView(
@@ -98,7 +100,8 @@ class _NightSummaryScreenState extends State<NightSummaryScreen> {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.primaryPurple.withAlpha((0.3 * 255).round()),
+                          color: AppTheme.primaryPurple
+                              .withAlpha((0.3 * 255).round()),
                           blurRadius: 20,
                           spreadRadius: 5,
                         ),
@@ -112,13 +115,11 @@ class _NightSummaryScreenState extends State<NightSummaryScreen> {
                         height: 1.8,
                       ),
                     ),
-                  )
-                      .animate()
-                      .fadeIn(duration: 600.ms)
-                      .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1)),
-                  
+                  ).animate().fadeIn(duration: 600.ms).scale(
+                      begin: const Offset(0.9, 0.9), end: const Offset(1, 1)),
+
                   const SizedBox(height: 24),
-                  
+
                   // ژورنال شبانه
                   const Text(
                     'ژورنال شبانه 💭',
@@ -144,9 +145,9 @@ class _NightSummaryScreenState extends State<NightSummaryScreen> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // دکمه‌ها
                   Row(
                     children: [
@@ -195,4 +196,3 @@ class _NightSummaryScreenState extends State<NightSummaryScreen> {
     );
   }
 }
-
