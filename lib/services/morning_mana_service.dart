@@ -5,12 +5,23 @@ import '../models/user_profile.dart';
 import '../services/ai_learning_service.dart';
 import '../services/gemini_service.dart';
 import '../services/hafez_service.dart';
+import '../providers/settings_provider.dart';
+import 'ai_provider.dart';
+import 'ai_provider_factory.dart';
+import 'history_service.dart';
 
 /// سرویس صبحانه مانا (Morning Mana)
 class MorningManaService {
-  final GeminiService _geminiService = GeminiService();
-  final HafezService _hafezService = HafezService();
   final AILearningService _aiLearning = AILearningService();
+
+  // New factory and history (could be injected via constructor/Provider in real app)
+  final HistoryStore _history = LocalHistoryStore();
+  AiProviderFactory get _factory => AiProviderFactory(
+        geminiApiKey: null,
+        openRouterKey: null,
+        togetherAiKey: null,
+        history: _history,
+      );
 
   /// تولید صبحانه مانا
   Future<String> generateMorningMana({
@@ -19,6 +30,7 @@ class MorningManaService {
     List<String>? tasks,
     String? weather,
     String? sportsNews,
+    SettingsProvider? settings,
   }) async {
     try {
       final userName = userProfile?.name ?? 'عزیزم';
@@ -68,7 +80,22 @@ ${preferences != null ? '''
 حداکثر ۱۵ خط
 ''';
 
-      final response = await _geminiService.sendMessage(prompt);
+      // Route via selected provider (defaults to gemini)
+      final chosen = settings?.aiProvider ?? 'gemini';
+      final type = chosen == 'openRouter'
+          ? AiProviderType.openRouter
+          : chosen == 'togetherAi'
+              ? AiProviderType.togetherAi
+              : AiProviderType.gemini;
+
+      final factory = AiProviderFactory(
+        geminiApiKey: settings?.userApiKey,
+        openRouterKey: settings?.openRouterKey,
+        togetherAiKey: settings?.togetherAiKey,
+        history: _history,
+      );
+      final ai = factory.create(type, settings: settings ?? SettingsProvider());
+      final response = await ai.generateText(prompt, options: const AiOptions(temperature: 0.7));
 
       // یادگیری از این تعامل
       await _aiLearning.learnFromInteraction(
@@ -108,5 +135,17 @@ ${preferences != null ? '''
     // در پروژه واقعی از API خبر استفاده کنید
     if (favoriteTeam == null) return null;
     return '$favoriteTeam دیشب برد! ⚽';
+  }
+
+  /// دریافت جمله انگیزشی روز
+  Future<String> getMotivationalQuote() async {
+    // در پروژه واقعی از یک API نقل‌قول/کتابخانه محلی استفاده کنید
+    return 'هر روز یک شروع تازه‌ست؛ امروزت رو عالی بساز! 🚀';
+  }
+
+  /// دریافت رویداد/مناسبت امروز
+  Future<String> getDailyEvent() async {
+    // در پروژه واقعی از یک API تقویم/رویداد استفاده کنید
+    return 'امروز بهترین زمان برای برداشتن اولین قدمه. ✨';
   }
 }

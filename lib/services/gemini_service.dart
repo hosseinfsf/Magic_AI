@@ -19,7 +19,7 @@ class GeminiService {
     return GenerativeModel(
       model: modelName,
       apiKey: apiKey,
-      config: GenerateContentConfig(
+      generationConfig: GenerationConfig(
         // Set higher for more creative tasks like generating content
         temperature: 0.7,
         // System instruction should be handled by the ChatSession in sendMessage

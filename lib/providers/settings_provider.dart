@@ -14,6 +14,10 @@ class SettingsProvider with ChangeNotifier {
   static const _kUserApiKey = 'user_api_key';
   static const _kDailyUsageCount = 'daily_usage_count';
   static const _kLastUsageDate = 'last_usage_date';
+  // New keys for multi-provider selection and keys
+  static const _kAiProvider = 'ai_provider_type';
+  static const _kOpenRouterKey = 'openrouter_api_key';
+  static const _kTogetherAiKey = 'together_api_key';
 
   // --- State ---
   bool _floatingEnabled = true;
@@ -24,6 +28,11 @@ class SettingsProvider with ChangeNotifier {
   String? _userApiKey;
   int _dailyUsageCount = 0;
   String _lastUsageDate = '';
+  
+  // Multi-provider state
+  String _aiProvider = 'gemini'; // 'gemini' | 'openRouter' | 'togetherAi'
+  String? _openRouterKey;
+  String? _togetherAiKey;
   
   static const int dailyLimit = 20;
 
@@ -36,6 +45,11 @@ class SettingsProvider with ChangeNotifier {
   String? get userApiKey => _userApiKey;
   int get remainingUsage => dailyLimit - _dailyUsageCount;
   bool get isFreeTierLimitReached => _aiModel == 'free' && _dailyUsageCount >= dailyLimit;
+
+  // Expose provider selection and keys
+  String get aiProvider => _aiProvider;
+  String? get openRouterKey => _openRouterKey;
+  String? get togetherAiKey => _togetherAiKey;
 
   // --- Initialization and Loading ---
   Future<void> loadSettings() async {
@@ -51,6 +65,11 @@ class SettingsProvider with ChangeNotifier {
     _aiModel = prefs.getString(_kAiModel) ?? 'free';
     _userApiKey = prefs.getString(_kUserApiKey);
     _lastUsageDate = prefs.getString(_kLastUsageDate) ?? '';
+
+    // Multi provider
+    _aiProvider = prefs.getString(_kAiProvider) ?? 'gemini';
+    _openRouterKey = prefs.getString(_kOpenRouterKey);
+    _togetherAiKey = prefs.getString(_kTogetherAiKey);
 
     // Check and reset daily usage (Core Logic)
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -116,6 +135,24 @@ class SettingsProvider with ChangeNotifier {
   Future<void> setUserApiKey(String key) async {
     _userApiKey = key;
     await _saveSetting(_kUserApiKey, key);
+    notifyListeners();
+  }
+
+  Future<void> setAiProvider(String provider) async {
+    _aiProvider = provider;
+    await _saveSetting(_kAiProvider, provider);
+    notifyListeners();
+  }
+
+  Future<void> setOpenRouterKey(String key) async {
+    _openRouterKey = key;
+    await _saveSetting(_kOpenRouterKey, key);
+    notifyListeners();
+  }
+
+  Future<void> setTogetherAiKey(String key) async {
+    _togetherAiKey = key;
+    await _saveSetting(_kTogetherAiKey, key);
     notifyListeners();
   }
 

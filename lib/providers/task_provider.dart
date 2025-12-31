@@ -3,11 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/task.dart';
-import '../services/cloud_storage_service.dart';
 
 /// Provider برای مدیریت کارها
 class TaskProvider with ChangeNotifier {
-  final CloudStorageService _cloudStorage = CloudStorageService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -33,13 +31,16 @@ class TaskProvider with ChangeNotifier {
 
     try {
       final snapshot = await _firestore
-          .collection('tasks')
+          .collection('users')
           .doc(_userId)
-          .collection('user_tasks')
+          .collection('tasks')
           .orderBy('createdAt', descending: true)
           .get();
 
-      _tasks = snapshot.docs.map((doc) => Task.fromJson(doc.data())).toList();
+      _tasks = snapshot.docs
+          .map((doc) => Task.fromFirestore(doc))
+          .where((task) => task.title.isNotEmpty) // Filter out empty tasks
+          .toList();
     } catch (e) {
       debugPrint('Error loading tasks: $e');
     } finally {
@@ -48,93 +49,102 @@ class TaskProvider with ChangeNotifier {
     }
   }
 
-  // افزودن کار
-  Future<void> addTask(Task task) async {
-    if (_userId == null) return;
+  // دریافت کارهای امروز
+  List<Task> getTodayTasks() {
+    final now = DateTime.now();
+    return _tasks.where((task) {
+      final taskDate = task.createdAt;
+      return taskDate.day == now.day &&
+          taskDate.month == now.month &&
+          taskDate.year == now.year;
+    }).toList();
+  }
+
+  // تغییر وضعیت تکمیل کار
+  Future<void> toggleTaskCompletion(String taskId) async {
+    final task = _tasks.firstWhere((t) => t.id == taskId);
+    final index = _tasks.indexOf(task);
+
+    // Update locally first for immediate UI feedback
+    _tasks[index] = task.copyWith(isCompleted: !task.isCompleted);
+    notifyListeners();
 
     try {
       await _firestore
-          .collection('tasks')
+          .collection('users')
           .doc(_userId)
-          .collection('user_tasks')
-          .doc(task.id)
-          .set(task.toJson());
-
-      _tasks.add(task);
-      notifyListeners();
+          .collection('tasks')
+          .doc(taskId)
+          .update({'isCompleted': _tasks[index].isCompleted});
     } catch (e) {
-      debugPrint('Error adding task: $e');
-      rethrow;
+      // Rollback in case of error
+      _tasks[index] = task.copyWith(isCompleted: task.isCompleted);
+      notifyListeners();
+      debugPrint('Error updating task: $e');
     }
   }
 
-  // به‌روزرسانی کار
-  Future<void> updateTask(Task task) async {
-    if (_userId == null) return;
+  // افزودن یک کار جدید
+  Future<void> addTask(String title) async {
+    if (title.trim().isEmpty) return;
+
+    final newTask = Task(
+      id: '',
+      title: title.trim(),
+      isCompleted: false,
+      createdAt: DateTime.now(),
+    );
+
+    // Add locally first for immediate UI feedback
+    _tasks.insert(0, newTask);
+    notifyListeners();
 
     try {
-      await _firestore
-          .collection('tasks')
+      final docRef = await _firestore
+          .collection('users')
           .doc(_userId)
-          .collection('user_tasks')
-          .doc(task.id)
-          .update(task.toJson());
+          .collection('tasks')
+          .add({
+        'title': newTask.title,
+        'isCompleted': newTask.isCompleted,
+        'createdAt': newTask.createdAt,
+      });
 
-      final index = _tasks.indexWhere((t) => t.id == task.id);
+      // Update with actual document ID
+      final index = _tasks.indexOf(newTask);
       if (index != -1) {
-        _tasks[index] = task;
+        _tasks[index] = newTask.copyWith(id: docRef.id);
         notifyListeners();
       }
     } catch (e) {
-      debugPrint('Error updating task: $e');
-      rethrow;
+      // Remove the task if saving failed
+      _tasks.remove(newTask);
+      notifyListeners();
+      debugPrint('Error adding task: $e');
     }
   }
 
-  // حذف کار
+  // حذف یک کار
   Future<void> deleteTask(String taskId) async {
-    if (_userId == null) return;
+    final task = _tasks.firstWhere((t) => t.id == taskId);
+    final index = _tasks.indexOf(task);
+
+    // Remove locally first for immediate UI feedback
+    _tasks.removeAt(index);
+    notifyListeners();
 
     try {
       await _firestore
-          .collection('tasks')
+          .collection('users')
           .doc(_userId)
-          .collection('user_tasks')
+          .collection('tasks')
           .doc(taskId)
           .delete();
-
-      _tasks.removeWhere((t) => t.id == taskId);
-      notifyListeners();
     } catch (e) {
+      // Add back in case of error
+      _tasks.insert(index, task);
+      notifyListeners();
       debugPrint('Error deleting task: $e');
-      rethrow;
     }
-  }
-
-  // تغییر وضعیت انجام
-  Future<void> toggleTaskCompletion(String taskId) async {
-    final task = _tasks.firstWhere((t) => t.id == taskId);
-    await updateTask(task.copyWith(isCompleted: !task.isCompleted));
-  }
-
-  // دریافت کارهای امروز
-  List<Task> getTodayTasks() {
-    final today = DateTime.now();
-    return _tasks.where((task) {
-      if (task.dueDate == null) return false;
-      return task.dueDate!.year == today.year &&
-          task.dueDate!.month == today.month &&
-          task.dueDate!.day == today.day;
-    }).toList();
-  }
-
-  // دریافت کارهای انجام نشده
-  List<Task> getOverdueTasks() {
-    final now = DateTime.now();
-    return _tasks.where((task) {
-      return !task.isCompleted &&
-          task.dueDate != null &&
-          task.dueDate!.isBefore(now);
-    }).toList();
   }
 }

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 
 import '../core/theme/app_theme.dart';
-import '../providers/chat_provider.dart';
 import '../providers/user_provider.dart';
+import '../providers/settings_provider.dart';
 import '../services/night_summary_service.dart';
 
 class NightSummaryScreen extends StatefulWidget {
@@ -39,10 +38,10 @@ class _NightSummaryScreenState extends State<NightSummaryScreen> {
 
     try {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
-      final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+      final settings = Provider.of<SettingsProvider>(context, listen: false);
       final userProfile = userProvider.userProfile;
 
-      // محاسبه کارهای انجام شده (در پروژه واقعی از Task Provider بگیرید)
+      // TODO: در پروژه واقعی از TaskProvider مقداردهی شود
       _completedTasks = 3; // مثال
       _totalTasks = 5;
 
@@ -56,15 +55,18 @@ class _NightSummaryScreenState extends State<NightSummaryScreen> {
         totalTasks: _totalTasks,
         musicSuggestion: musicSuggestion,
         movieSuggestion: movieSuggestion,
+        settings: settings,
       );
 
+      if (!mounted) return;
       setState(() {
         _nightMessage = message;
-        _isLoading = false;
       });
     } catch (e) {
+      debugPrint('Error loading night summary: $e');
+    } finally {
+      if (!mounted) return;
       setState(() {
-        _nightMessage = 'خطا در بارگذاری شب‌نامه مانا';
         _isLoading = false;
       });
     }
@@ -82,8 +84,7 @@ class _NightSummaryScreenState extends State<NightSummaryScreen> {
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                valueColor:
-                    AlwaysStoppedAnimation<Color>(AppTheme.secondaryGold),
+                valueColor: AlwaysStoppedAnimation<Color>(AppTheme.secondaryGold),
               ),
             )
           : SingleChildScrollView(
@@ -91,108 +92,152 @@ class _NightSummaryScreenState extends State<NightSummaryScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // کارت شب‌نامه
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      gradient: AppTheme.mysticalGradient,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.primaryPurple
-                              .withAlpha((0.3 * 255).round()),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      _nightMessage ?? '',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        height: 1.8,
-                      ),
-                    ),
-                  ).animate().fadeIn(duration: 600.ms).scale(
-                      begin: const Offset(0.9, 0.9), end: const Offset(1, 1)),
-
-                  const SizedBox(height: 24),
-
-                  // ژورنال شبانه
-                  const Text(
-                    'ژورنال شبانه 💭',
-                    style: TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _journalController,
-                    maxLines: 5,
-                    style: const TextStyle(color: AppTheme.textPrimary),
-                    decoration: InputDecoration(
-                      hintText: 'امروزت چطور بود؟ چیزی که می‌خوای بنویسی...',
-                      hintStyle: const TextStyle(color: AppTheme.textSecondary),
-                      filled: true,
-                      fillColor: AppTheme.bgCard,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // دکمه‌ها
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            // ذخیره ژورنال
-                            if (_journalController.text.isNotEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('ژورنال ذخیره شد ✨'),
-                                  backgroundColor: AppTheme.primaryPurple,
-                                ),
-                              );
-                            }
-                          },
-                          icon: const Icon(Icons.save),
-                          label: const Text('ذخیره'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryPurple,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(Icons.close),
-                          label: const Text('بستن'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.bgCard,
-                            foregroundColor: AppTheme.textPrimary,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  _buildSummaryCard(),
+                  const SizedBox(height: 16),
+                  _buildTaskProgressCard(),
+                  const SizedBox(height: 16),
+                  _buildJournalCard(),
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildSummaryCard() {
+    return Card(
+      color: AppTheme.bgCard,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: AppTheme.primaryPurple.withValues(alpha: 0.3), width: 1),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: const [
+                Icon(Icons.nights_stay, color: AppTheme.secondaryGold),
+                SizedBox(width: 12),
+                Text(
+                  'خلاصه شب',
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              _nightMessage ?? 'در حال آماده‌سازی خلاصه...',
+              style: const TextStyle(color: AppTheme.textSecondary, height: 1.6),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTaskProgressCard() {
+    final double progress = _totalTasks > 0 ? _completedTasks / _totalTasks : 0.0;
+
+    return Card(
+      color: AppTheme.bgCard,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: AppTheme.primaryPurple.withValues(alpha: 0.3), width: 1),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: const [
+                Icon(Icons.task_alt, color: AppTheme.secondaryGold),
+                SizedBox(width: 12),
+                Text(
+                  'پیشرفت کارها',
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            LinearProgressIndicator(
+              value: progress,
+              backgroundColor: AppTheme.textSecondary.withValues(alpha: 0.2),
+              valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.secondaryGold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _totalTasks > 0
+                  ? '${(_completedTasks * 100 ~/ _totalTasks)}% (${_completedTasks}/$_totalTasks) کار انجام شد'
+                  : 'کاری ثبت نشده است',
+              style: const TextStyle(color: AppTheme.textSecondary),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildJournalCard() {
+    return Card(
+      color: AppTheme.bgCard,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: AppTheme.primaryPurple.withValues(alpha: 0.3), width: 1),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: const [
+                Icon(Icons.edit_note, color: AppTheme.secondaryGold),
+                SizedBox(width: 12),
+                Text(
+                  'یادداشت شب',
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _journalController,
+              maxLines: 4,
+              style: const TextStyle(color: AppTheme.textPrimary),
+              decoration: const InputDecoration(
+                hintText: 'یادداشت شب خود را بنویسید...',
+                hintStyle: TextStyle(color: AppTheme.textSecondary),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                ),
+                filled: true,
+                fillColor: AppTheme.bgDark,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('یادداشت ذخیره شد!'),
+                    backgroundColor: AppTheme.primaryPurple,
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryPurple,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('ذخیره یادداشت'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

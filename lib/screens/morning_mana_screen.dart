@@ -63,22 +63,26 @@ class _MorningManaScreenState extends State<MorningManaScreen> {
         _service.getWeather(userProfile?.city ?? 'تهران'),
         _service.getMotivationalQuote(),
         _service.getDailyEvent(),
-        Future.value(HafezService.getRandomFortune()),
-        // Daily Hafez
-        Future.value(taskProvider.todayTasks.map((t) => t.title).toList()),
-        // Real tasks
-        _service
-            .getSportsNews(userProvider.userProfile?.favoriteTeam ?? 'فوتبال'),
-        // Use preference
+        Future.value(HafezService.getRandomFortune()), // Daily Hafez - already a Map
+        Future.value(taskProvider.getTodayTasks().map((t) => t.title).toList()), // Real tasks via provider method
+        _service.getSportsNews(userProvider.userProfile?.favoriteTeam ?? 'فوتبال'), // Use preference
       ]);
 
       setState(() {
+        // Hafez fortune could be a String or Map depending on service; handle both gracefully
+        final hafezRaw = results[3];
+        final hafezText = hafezRaw is String
+            ? hafezRaw
+            : (hafezRaw is Map && hafezRaw['text'] != null && hafezRaw['text'] is String)
+                ? hafezRaw['text'] as String
+                : 'فالی یافت نشد.';
+
         _morningData = MorningManaData(
           weather: results[0] as String,
           motivationalQuote: results[1] as String,
           dailyEvent: results[2] as String,
-          hafezOmen: (results[3] as Map)['text'] ?? 'فالی یافت نشد.',
-          tasks: results[4] as List<String>,
+          hafezOmen: hafezText,
+          tasks: (results[4] as List<String>),
           sportsNews: results[5] as String?,
         );
         _isLoading = false;
@@ -141,8 +145,12 @@ class _MorningManaScreenState extends State<MorningManaScreen> {
             _buildInfoCard(
                 Icons.wb_sunny_outlined, 'آب و هوا', _morningData!.weather),
             const SizedBox(height: 16),
-            _buildInfoCard(Icons.task_alt, 'کارهای امروز',
-                _morningData!.tasks.join('\n- ')),
+            _buildInfoCard(
+                Icons.task_alt,
+                'کارهای امروز',
+                _morningData!.tasks.isEmpty
+                    ? 'هیچ کاری برای امروز ثبت نشده است.'
+                    : _morningData!.tasks.map((t) => '- $t').join('\n')),
             const SizedBox(height: 16),
             _buildInfoCard(Icons.auto_stories_outlined, 'فال حافظ',
                 _morningData!.hafezOmen),
@@ -170,11 +178,11 @@ class _MorningManaScreenState extends State<MorningManaScreen> {
     if (content.isEmpty) return const SizedBox.shrink();
 
     return Card(
-      color: AppTheme.bgCard.withOpacity(0.8),
+      color: AppTheme.bgCard.withValues(alpha: 0.8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-            color: AppTheme.primaryPurple.withOpacity(0.3), width: 1),
+            color: AppTheme.primaryPurple.withValues(alpha: 0.3), width: 1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -213,8 +221,9 @@ class _MorningManaScreenState extends State<MorningManaScreen> {
             Icon(Icons.cloud_off, color: AppTheme.textSecondary, size: 60),
             SizedBox(height: 16),
             Text(
-              'خطا در دریافت اطلاعات',
+              'خطا در دریافت اطلاعات. لطفا دوباره تلاش کنید.',
               style: TextStyle(color: AppTheme.textSecondary, fontSize: 18),
+              textAlign: TextAlign.center,
             ),
           ],
         ),

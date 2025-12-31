@@ -1,4 +1,6 @@
 /// مدل کار/تسک
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Task {
   final String id;
   final String title;
@@ -52,6 +54,24 @@ class Task {
       ),
       isCompleted: json['isCompleted'] ?? false,
       category: json['category'],
+    );
+  }
+
+  // ساخت از Firestore DocumentSnapshot
+  factory Task.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>?;
+    return Task(
+      id: doc.id,
+      title: data?['title'] ?? '',
+      description: data?['description'],
+      createdAt: (data?['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      dueDate: (data?['dueDate'] as Timestamp?)?.toDate(),
+      priority: TaskPriority.values.firstWhere(
+        (e) => e.name == (data?['priority'] ?? 'medium'),
+        orElse: () => TaskPriority.medium,
+      ),
+      isCompleted: data?['isCompleted'] ?? false,
+      category: data?['category'],
     );
   }
 

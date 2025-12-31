@@ -51,13 +51,10 @@ class AppTheme {
       ),
 
       textTheme: GoogleFonts.vazirmatnTextTheme(
-        Theme
-            .of(context)
-            .textTheme
-            .apply(
-          bodyColor: textPrimary,
-          displayColor: textPrimary,
-        ),
+        Theme.of(context).textTheme.apply(
+              bodyColor: textPrimary,
+              displayColor: textPrimary,
+            ),
       ).copyWith(
         headlineLarge: GoogleFonts.vazirmatn(
           fontSize: 32,
@@ -83,11 +80,11 @@ class AppTheme {
         ),
       ),
 
-      cardTheme: CardThemeData(
-        color: bgCard,
+      cardTheme: const CardThemeData(
+        color: AppTheme.bgCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
       ),
 
@@ -135,12 +132,32 @@ class AppTheme {
       ),
 
       textTheme: GoogleFonts.vazirmatnTextTheme(
-        Theme
-            .of(context)
-            .textTheme
-            .apply(
-          bodyColor: textDark,
-          displayColor: textDark,
+        Theme.of(context).textTheme.apply(
+              bodyColor: textDark,
+              displayColor: textDark,
+            ),
+      ).copyWith(
+        headlineLarge: GoogleFonts.vazirmatn(
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+          color: textDark,
+          height: 1.5,
+        ),
+        headlineMedium: GoogleFonts.vazirmatn(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: textDark,
+          height: 1.4,
+        ),
+        bodyLarge: GoogleFonts.vazirmatn(
+          fontSize: 16,
+          color: textDark,
+          height: 1.8,
+        ),
+        bodyMedium: GoogleFonts.vazirmatn(
+          fontSize: 14,
+          color: Colors.black54,
+          height: 1.7,
         ),
       ),
     );

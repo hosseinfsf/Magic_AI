@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
+import '../services/hafez_service.dart';
 
 class HafezOmenWidget extends StatelessWidget {
   const HafezOmenWidget({super.key});
@@ -12,7 +13,7 @@ class HafezOmenWidget extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
         side: BorderSide(
-          color: AppTheme.secondaryGold.withOpacity(0.5),
+          color: AppTheme.secondaryGold.withValues(alpha: 0.5),
           width: 1.5,
         ),
       ),
@@ -63,7 +64,10 @@ class HafezOmenWidget extends StatelessWidget {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Implement fetching new omen
+                  // Fetch a new random omen from HafezService
+                  final newOmen = HafezService.getRandomFortune();
+                  // In a real implementation, you might update state to show the new omen
+                  // setState(() { _currentOmen = newOmen; });
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.secondaryGold,

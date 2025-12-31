@@ -70,6 +70,68 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
 
+            const SizedBox(height: 8),
+
+            // AI Provider Selection
+            ListTile(
+              leading: const Icon(Icons.hub, color: AppTheme.secondaryGold),
+              title: const Text('ارائه‌دهنده AI', style: TextStyle(color: Colors.white)),
+              subtitle: const Text('یکی را انتخاب کنید', style: TextStyle(color: AppTheme.textSecondary)),
+              trailing: DropdownButton<String>(
+                value: settings.aiProvider,
+                dropdownColor: AppTheme.bgCard,
+                underline: const SizedBox.shrink(),
+                items: const [
+                  DropdownMenuItem(value: 'gemini', child: Text('Google Gemini', style: TextStyle(color: Colors.white))),
+                  DropdownMenuItem(value: 'openRouter', child: Text('OpenRouter', style: TextStyle(color: Colors.white))),
+                  DropdownMenuItem(value: 'togetherAi', child: Text('Together AI', style: TextStyle(color: Colors.white))),
+                ],
+                onChanged: (value) {
+                  if (value != null) settings.setAiProvider(value);
+                },
+              ),
+            ),
+
+            if (settings.aiProvider == 'openRouter')
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: TextField(
+                  obscureText: true,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'OpenRouter API Key',
+                    labelStyle: const TextStyle(color: AppTheme.textSecondary),
+                    filled: true,
+                    fillColor: AppTheme.bgDark.withValues(alpha: 0.5),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                  ),
+                  onSubmitted: (v) {
+                    settings.setOpenRouterKey(v.trim());
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('کلید OpenRouter ذخیره شد!')));
+                  },
+                ),
+              ),
+
+            if (settings.aiProvider == 'togetherAi')
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: TextField(
+                  obscureText: true,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'TogetherAI API Key',
+                    labelStyle: const TextStyle(color: AppTheme.textSecondary),
+                    filled: true,
+                    fillColor: AppTheme.bgDark.withValues(alpha: 0.5),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                  ),
+                  onSubmitted: (v) {
+                    settings.setTogetherAiKey(v.trim());
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('کلید TogetherAI ذخیره شد!')));
+                  },
+                ),
+              ),
+
             // Usage Limit / API Key Input
             if (settings.aiModel == 'free')
               Padding(
@@ -94,7 +156,7 @@ class SettingsScreen extends StatelessWidget {
                     labelText: 'کلید API شخصی شما',
                     labelStyle: const TextStyle(color: AppTheme.textSecondary),
                     filled: true,
-                    fillColor: AppTheme.bgDark.withOpacity(0.5),
+                    fillColor: AppTheme.bgDark.withValues(alpha: 0.5),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.save, color: AppTheme.secondaryGold),
@@ -133,7 +195,7 @@ class SettingsScreen extends StatelessWidget {
                 min: 0.2,
                 max: 1.0,
                 activeColor: AppTheme.primaryPurple,
-                inactiveColor: AppTheme.primaryPurple.withOpacity(0.3),
+                inactiveColor: AppTheme.primaryPurple.withValues(alpha: 0.3),
               ),
             ),
           ],

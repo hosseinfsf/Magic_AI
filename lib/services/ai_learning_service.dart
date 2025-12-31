@@ -3,11 +3,24 @@ import 'package:flutter/foundation.dart';
 import '../models/user_preferences.dart';
 import '../services/cloud_storage_service.dart';
 import '../services/gemini_service.dart';
+import '../providers/settings_provider.dart';
+import 'ai_provider.dart';
+import 'ai_provider_factory.dart';
+import 'history_service.dart';
 
 /// سرویس یادگیری AI از رفتار و ترجیحات کاربر
 class AILearningService {
   final CloudStorageService _cloudStorage = CloudStorageService();
   final GeminiService _geminiService = GeminiService();
+
+  // Shared history + factory
+  final HistoryStore _history = LocalHistoryStore();
+  AiProviderFactory get _factory => AiProviderFactory(
+        geminiApiKey: null,
+        openRouterKey: null,
+        togetherAiKey: null,
+        history: _history,
+      );
 
   UserPreferences? _cachedPreferences;
 
@@ -68,7 +81,7 @@ class AILearningService {
   }
 
   /// تحلیل پیام کاربر برای استخراج علایق
-  Future<void> _analyzeUserMessage(String message) async {
+  Future<void> _analyzeUserMessage(String message, {SettingsProvider? settings}) async {
     try {
       final prompt = '''
 این پیام کاربر رو تحلیل کن و اطلاعات زیر رو استخراج کن:
@@ -86,11 +99,19 @@ class AILearningService {
 }
 ''';
 
-      final response = await _geminiService.sendMessage(prompt);
+      final chosen = settings?.aiProvider ?? 'gemini';
+      final type = chosen == 'openRouter'
+          ? AiProviderType.openRouter
+          : chosen == 'togetherAi'
+              ? AiProviderType.togetherAi
+              : AiProviderType.gemini;
+
+      final ai = _factory.create(type, settings: settings ?? SettingsProvider());
+      await ai.generateText(prompt, options: const AiOptions(temperature: 0.3));
 
       // Parse response and update preferences
       // (در پروژه واقعی از json_serializable استفاده کنید)
-      final preferences = await loadPreferences();
+      await loadPreferences();
 
       // به‌روزرسانی ترجیحات بر اساس تحلیل
       // این یک پیاده‌سازی ساده است - می‌توانید پیچیده‌تر کنید
@@ -103,6 +124,7 @@ class AILearningService {
   Future<String> getPersonalizedSuggestion({
     required String context,
     required String type, // 'content', 'activity', 'reminder'
+    SettingsProvider? settings,
   }) async {
     try {
       final preferences = await loadPreferences();
@@ -131,7 +153,15 @@ ${behaviorHistory.take(5).map((b) => '- ${b['action']}: ${b['context']}').join('
 - مفید و عملی باشه
 ''';
 
-      return await _geminiService.sendMessage(prompt);
+      final chosen = settings?.aiProvider ?? 'gemini';
+      final providerType = chosen == 'openRouter'
+          ? AiProviderType.openRouter
+          : chosen == 'togetherAi'
+              ? AiProviderType.togetherAi
+              : AiProviderType.gemini;
+
+      final ai = _factory.create(providerType, settings: settings ?? SettingsProvider());
+      return await ai.generateText(prompt, options: const AiOptions(temperature: 0.5));
     } catch (e) {
       debugPrint('Error getting personalized suggestion: $e');
       return '';

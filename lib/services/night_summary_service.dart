@@ -3,12 +3,23 @@ import 'package:flutter/foundation.dart';
 import '../models/user_preferences.dart';
 import '../models/user_profile.dart';
 import '../services/ai_learning_service.dart';
-import '../services/gemini_service.dart';
+import '../providers/settings_provider.dart';
+import 'ai_provider.dart';
+import 'ai_provider_factory.dart';
+import 'history_service.dart';
 
 /// سرویس شب‌نامه مانا (Night Summary)
 class NightSummaryService {
-  final GeminiService _geminiService = GeminiService();
   final AILearningService _aiLearning = AILearningService();
+
+  // New factory and history
+  final HistoryStore _history = LocalHistoryStore();
+  AiProviderFactory get _factory => AiProviderFactory(
+        geminiApiKey: null,
+        openRouterKey: null,
+        togetherAiKey: null,
+        history: _history,
+      );
 
   /// تولید شب‌نامه مانا
   Future<String> generateNightSummary({
@@ -18,6 +29,7 @@ class NightSummaryService {
     required int totalTasks,
     String? musicSuggestion,
     String? movieSuggestion,
+    SettingsProvider? settings,
   }) async {
     try {
       final userName = userProfile?.name ?? 'عزیزم';
@@ -51,7 +63,21 @@ ${preferences != null ? '''
 حداکثر ۱۲ خط
 ''';
 
-      final response = await _geminiService.sendMessage(prompt);
+      final chosen = settings?.aiProvider ?? 'gemini';
+      final type = chosen == 'openRouter'
+          ? AiProviderType.openRouter
+          : chosen == 'togetherAi'
+              ? AiProviderType.togetherAi
+              : AiProviderType.gemini;
+
+      final factory = AiProviderFactory(
+        geminiApiKey: settings?.userApiKey,
+        openRouterKey: settings?.openRouterKey,
+        togetherAiKey: settings?.togetherAiKey,
+        history: _history,
+      );
+      final ai = factory.create(type, settings: settings ?? SettingsProvider());
+      final response = await ai.generateText(prompt, options: const AiOptions(temperature: 0.6));
 
       // یادگیری از این تعامل
       await _aiLearning.learnFromInteraction(

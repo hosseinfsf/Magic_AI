@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_theme.dart';
 import '../widgets/hafez_widget.dart';
@@ -119,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _handleIconDoubleTap(BuildContext ctx) {
     showModalBottomSheet(
       context: ctx,
-      backgroundColor: AppTheme.bgCard.withOpacity(0.9),
+      backgroundColor: AppTheme.bgCard.withValues(alpha: 0.9),
       isScrollControlled: true,
       builder: (_) {
         return _clipboardActive ? _buildClipboardActionMenu() : _buildQuickMenu();
@@ -229,39 +228,124 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
   
-  void _runClipboardAction(String command) {
-    Navigator.pop(context); // Close bottom sheet
-    _messageController.text = '$command: "${_copiedText}"';
-    _sendMessage();
-    setState(() {
-      _clipboardActive = false; // Reset icon state
-    });
-  }
 
   void _sendMessage() async {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
+    // Add user message to chat
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    final settingsProvider = Provider.of<SettingsProvider>(context, listen: false); // Get settings
-
-    chatProvider.addUserMessage(text);
+    final userMessage = ChatMessage(id: '', text: text, isUser: true, timestamp: DateTime.now());
+    chatProvider.addMessage(userMessage);
     _messageController.clear();
-    // _scrollToBottom(); // Add a scroll method here if needed
-    chatProvider.setLoading(true);
 
+    // Scroll to bottom after a short delay
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      );
+    }
+
+    // Generate and add AI response
     try {
-      final response = await _geminiService.sendMessage(text, settingsProvider);
-      chatProvider.addAssistantMessage(response);
+      chatProvider.setLoading(true);
+      final response = await _geminiService.sendMessage(text, Provider.of<SettingsProvider>(context, listen: false));
+      final aiMessage = ChatMessage(id: '', text: response, isUser: false, timestamp: DateTime.now());
+      chatProvider.addMessage(aiMessage);
     } catch (e) {
-      chatProvider.addAssistantMessage('متأسفانه مشکلی پیش اومد: ${e.toString()} 😞');
+      chatProvider.addMessage(ChatMessage(id: '', text: 'متاسفم، خطایی رخ داد: $e', isUser: false, timestamp: DateTime.now()));
     } finally {
       chatProvider.setLoading(false);
     }
   }
 
-  // --- Quick Menu and Clipboard Menu methods are assumed to be here ---
-  Widget _buildClipboardActionMenu() => const SizedBox.shrink(); 
-  Widget _buildQuickMenu() => const SizedBox.shrink(); 
-  
+  // Build clipboard action menu
+  Widget _buildClipboardActionMenu() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'کلیپ بورد فعال شد!',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+          ),
+          const SizedBox(height: 16),
+          ListTile(
+            leading: const Icon(Icons.copy, color: AppTheme.secondaryGold),
+            title: const Text('کپی متن', style: TextStyle(color: AppTheme.textPrimary)),
+            onTap: () {
+              Clipboard.setData(ClipboardData(text: _copiedText));
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('متن کپی شد!')),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.auto_fix_high, color: AppTheme.secondaryGold),
+            title: const Text('خلاصه‌نویسی', style: TextStyle(color: AppTheme.textPrimary)),
+            onTap: () async {
+              Navigator.pop(context);
+              _messageController.text = 'لطفا این متن را خلاصه کن: "${_copiedText}"';
+              setState(() => _clipboardActive = false);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.translate, color: AppTheme.secondaryGold),
+            title: const Text('ترجمه', style: TextStyle(color: AppTheme.textPrimary)),
+            onTap: () async {
+              Navigator.pop(context);
+              _messageController.text = 'لطفا این متن را به فارسی ترجمه کن: "${_copiedText}"';
+              setState(() => _clipboardActive = false);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Build quick menu when clipboard is not active
+  Widget _buildQuickMenu() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'منوی سریع',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+          ),
+          const SizedBox(height: 16),
+          ListTile(
+            leading: const Icon(Icons.history, color: AppTheme.secondaryGold),
+            title: const Text('باز کردن تاریخچه', style: TextStyle(color: AppTheme.textPrimary)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/history');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.nightlight_round, color: AppTheme.secondaryGold),
+            title: const Text('باز کردن شب نامه', style: TextStyle(color: AppTheme.textPrimary)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/night-summary');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.wb_sunny, color: AppTheme.secondaryGold),
+            title: const Text('باز کردن صبح نامه', style: TextStyle(color: AppTheme.textPrimary)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/morning-mana');
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
